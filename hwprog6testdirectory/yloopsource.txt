@@ -1,0 +1,9 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+TOP LD    IDX       * load ACC with value at IDX
+    WRT             * write it
+    BAN   TOP       * store the new value
+    STP
+*
+IDX HEX       -0002 * loop index
+    END

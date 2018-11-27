@@ -1,0 +1,28 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    LD    IDX       * load ACC with value at IDX
+    LD    NN        * load initial n^2 value
+    WRT             * write it
+*
+TOP LD    NN        * load the initial n^2 value
+    ADD   N         * add in N
+    ADD   N         * add in N (again)
+    ADD   ONE       * add in ONE
+    WRT             * write the new value
+    STC   NN        * store the new n^2
+    LD    N         * load the addend
+    ADD   ONE       * increment it
+    STC   N         * store it back
+*
+    LD    IDX       * reload ACC with the counter
+    ADD   ONE       * increment counter
+    STC   IDX       * store this new address at STO
+    LD    IDX       * reload ACC with the counter
+    BAN   TOP       * loop until done
+    STP
+*
+IDX HEX       -0005 * loop index
+ONE HEX       +0001 * we need a constant 1
+N   HEX       +0003 * 
+NN  HEX       +0009 *
+    END

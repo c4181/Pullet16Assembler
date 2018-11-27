@@ -1,0 +1,23 @@
+#!/bin/bash
+# Note that the ONLY line that will change in any of these
+# four scripts is the 'Aprog >zoutput1' line.  For this
+# program, there is no input, and the output of the 'cout'
+# command is redirected to a file named 'zoutput1'.
+# And remember that Unix takes a file name to be a file
+# name and doesn't do anything hidden about file name
+# suffixes.  
+echo "Descend into 'testdirectory' directory"
+cd testdirectory
+#
+for item in *
+do
+  echo " "
+  echo "EXECUTING" $item
+  cd $item
+  Aprog ../../adotoutsquares ../../zzin.txt zmyout.txt zmylog.txt
+  cd ..
+echo "EXECUTION COMPLETE"
+done
+echo "Return from 'testdirectory' directory"
+cd ..
+echo " "

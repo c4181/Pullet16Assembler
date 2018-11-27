@@ -1,0 +1,18 @@
+RD  RD
+    WRT
+    STC   MEM
+    LD    CON
+LUP ADD   MEM
+    WRT
+    BAN   LUP
+    LD    ZER
+    WRT
+    LD    A1
+    AND   A2
+    STP
+MEM DS        +0001
+CON HEX       -0021
+ZER HEX       +0000
+A1  HEX       +3C3C
+A2  HEX       +5656
+    END

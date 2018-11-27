@@ -1,0 +1,18 @@
+BEG LD    XX
+    STC   AAA
+LUP LD    N2
+    ADD   N3
+    STC   N2
+    LD    N2
+    WRT
+    BAN   LUP
+    STP
+N1  HEX       +0002
+N2  HEX       -0005
+N3  HEX       +0001
+XX  HEX       +0030
+    ORG       +0020
+AAA DS        +0001
+    ORG       +0030
+MEM DS        +0010
+    END

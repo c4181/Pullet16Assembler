@@ -1,0 +1,36 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    LD    IDX       * load ACC with value at IDX
+    ADD   STO       * add loop value to initial address
+    STC   STO       * store that address at STO
+*
+TOP LD    BB1       * load ACC with value at BB1
+    STC   TMP       * store that value at TMP
+    LD    BB1       * reload ACC with value at BB1
+    ADD   AA1       * add in value at AA1
+    WRT             * write the new Fib number
+    STC * STO       * store ACC where STO is pointing to
+    LD  * STO       * load ACC from where STO is pointing to
+    STC   BB1       * store ACC where STO is pointing to
+    LD    TMP       * load the old BB1 from TMP
+    STC   AA1       * store ACC where STO is pointing to
+*
+    LD    IDX       * reload ACC with the counter
+    ADD   ONE       * increment counter
+    STC   IDX       * store this new address at STO
+    LD    STO       * load our pointer
+    ADD   ONE       * increment by one
+    STC   STO       * store it back
+    LD    IDX       * reload ACC with the counter
+    BAN   TOP       * loop until done
+    STP
+*
+ONE HEX       +0001 * we need a constant 1
+IDX HEX       -0005 * loop index
+AA1 HEX       +0008 * smaller of two values to add 
+BB1 HEX       +000D * larger of two values to add
+TMP DS        +0001 * temp storage
+STO HEX       +0028 * address in SSS at which to store
+    ORG       +0028 * set PC location for SSS at +0020 
+SSS DS        +0010
+    END

@@ -1,0 +1,14 @@
+RD  RD
+    WRT
+    STC   MEM
+    LD    CON
+LUP ADD   MEM
+    WRT
+    BAN   LUP
+    LD    ZER
+    WRT
+    STP
+MEM DS        +0001
+CON HEX       -0021
+ZER HEX       +0000
+    END

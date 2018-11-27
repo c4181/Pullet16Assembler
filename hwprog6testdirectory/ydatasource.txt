@@ -1,0 +1,18 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    LD    IDX       * load ACC with value at IDX
+    WRT             * write it
+*
+TOP ADD   N         * add in N
+    ADD   ONE       * add in ONE
+    WRT             * write the new value
+    STC   NN        * store the new value
+*
+BAD HEX       -0002 * bad data location
+    STP
+*
+IDX HEX       -0002 * loop index
+ONE HEX       +0001 * we need a constant 1
+N   HEX       +0001 * 
+NN  HEX       +0009 *
+    END

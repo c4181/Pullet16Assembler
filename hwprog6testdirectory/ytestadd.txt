@@ -1,0 +1,10 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    LD    A         * load the first addend 
+    ADD   B         * add in the second addend
+    WRT             * write the acc to output
+    STP
+    END
+*
+A   HEX       +0005
+B   HEX       +0009

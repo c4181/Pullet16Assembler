@@ -1,0 +1,16 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    LD    LUP       * load the loop variable
+TOP WRT             * write the acc to output
+    ADD   ONE       * increment the acc
+    STC   LUP       * store back the loop variable
+    LD    LUP       * load the loop variable
+    BAN   TOP       * add in the second addend
+    LD    A         * load the loop variable
+    WRT             * write the acc to output
+    STP
+*
+LUP HEX       -0002
+ONE HEX       +0001
+A   HEX       +0009
+    END

@@ -1,0 +1,22 @@
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    LD    AAA       * load ACC with value at AAA
+    WRT             * write the base value
+*
+TOP LD    AAA       * load the current value
+    ADD   ICR       * add increment to ACC
+    WRT             * write the new value
+    STC   AAA       * store the new value back
+    LD    CTR       * load ACC with the counter
+    ADD   ONE       * increment the counter
+    STC   CTR       * store the new counter value
+    LD    CTR       * load ACC with the counter
+    BAN   TOP       * loop until done
+*
+    STP             * done if we fall through the loop
+*
+AAA HEX       +0001 * base value
+CTR HEX       -0005 * counter for the loop
+ICR HEX       +0002 * increment
+ONE HEX       +0001 * we need a constant 1
+    END

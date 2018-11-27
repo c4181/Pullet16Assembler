@@ -1,0 +1,15 @@
+*23456789012345678901
+STR RD
+    STC   A1
+68  AND * B1
+    BAN   CHK
+STR LD  * A1
+    DIV   90
+A1  DS        +000A * comment
+    DS        +0006 * comment
+    HEX       +0A0A
+    HEX       +F202
+    HEX       -E101
+    DS        +F00F * comment
+B1  HEX       +0010 * comment
+B2  HEX       -001C * comment

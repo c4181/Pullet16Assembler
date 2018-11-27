@@ -1,0 +1,15 @@
+*23456789012345678901
+AU  RD
+    STC   M1
+    SUB   CHK
+    BAN   A1 
+12A ADD   M1
+LP  STC   M2
+    LD    CHK
+LP  OR    M1
+    WRT
+    STP
+M1  DS        +0003 * comment
+    ORG       +0044 * comment
+CHK HEX       -004D * comment
+    END
