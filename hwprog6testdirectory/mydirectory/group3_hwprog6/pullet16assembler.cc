@@ -117,6 +117,36 @@ void Assembler::PassOne(Scanner& in_scanner) {
   Utils::log_stream << "enter PassOne" << endl;
 #endif
 
+  int counter = 0;
+  Symbol symbol;
+  CodeLine codeline = CodeLine();
+  while(in_scanner.HasNext()){
+    string line = in_scanner.NextLine();
+    if(line.at(0) == '*'){
+      continue;
+    }
+    else if(line.size() < 4) {
+      line = "    " + line + "                                   ";
+      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3), line.substr(8,1),
+      line.substr(10,3), line.substr(14,5), line.substr(20), line);
+      codelines_.push_back(codeline);  
+    }
+    else if (line.size()>20 && line.at(20) == '*') {
+      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3), line.substr(8,1),
+      line.substr(10,3), line.substr(14,5), line.substr(20), line);
+      codelines_.push_back(codeline);
+      symbol = Symbol(line,counter);
+      symboltable_[line.substr(0,3)] = symbol;
+    }
+    else {
+      line = "    " + line;
+      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3), line.substr(8,1),
+      line.substr(10,3), line.substr(14,5), line.substr(20), line);
+      codelines_.push_back(codeline); 
+    }
+    counter++;
+  }
+
 #ifdef EBUG
   Utils::log_stream << "leave PassOne" << endl;
 #endif
@@ -130,6 +160,23 @@ void Assembler::PassTwo() {
 #ifdef EBUG
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
+
+  string mnemonic = codelines_.at(pc_in_assembler_.GetMnemonic());
+  string opcode;
+  string addressing_type;
+  string sym_operand;
+
+  if (opcodes_.find(mnemonic) != opcodes_.end()) {
+    opcode = opcode.find(mnemonic);
+  }
+
+  addressing_type = codelines_.at(pc_in_assembler_.GetAddr());
+
+  if (codelines_.at(pc_in_assembler_.HasSymOperand())) {
+    symoperand = codelines_.at(pc_in_assembler_.GetSymOperand());
+  }
+
+  
 
 #ifdef EBUG
   Utils::log_stream << "leave PassTwo" << endl;
