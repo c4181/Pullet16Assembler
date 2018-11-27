@@ -35,7 +35,7 @@ string CodeLine::GetAddr() const {
   string returnvalue;
 
   code goes here
-  }
+  
   return returnvalue;
 }
 

@@ -18,7 +18,8 @@ Symbol::Symbol() {
  * Constructor
 **/
 Symbol::Symbol(string text, int programcounter) {
-  code goes here
+  text_ = text;
+  location_ = programcounter;
 }
 
 /******************************************************************************
@@ -74,7 +75,14 @@ void Symbol::SetMultiply() {
 bool Symbol::CheckInvalid() const {
   bool returnvalue = false;  // false means no, not invalid
 
-  code goes here
+  if (isalpha(text_.at(0)) == 0) {  
+    // If the first character is not an alpha symbol
+    returnvalue = true;
+  }
+  if (isalnum(text_.at(1)) == 0 || isalnum(text_.at(2)) == 0) {
+    // If the second or third character is not alphanumeric
+    returnvalue = true;
+  }
 
   return returnvalue;
 }
