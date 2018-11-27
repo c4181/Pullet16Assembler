@@ -1,0 +1,9 @@
+diff globals.h ~/Current/240_20184fall/hwprogs/hwprog5/hwprog5realdirectory/mydirectory/hackerjrandom_hwprog5/globals.h
+diff globals.cc ~/Current/240_20184fall/hwprogs/hwprog5/hwprog5realdirectory/mydirectory/hackerjrandom_hwprog5/globals.cc
+#
+diff hex.h ~/Current/240_20184fall/hwprogs/hwprog5/hwprog5realdirectory/mydirectory/hackerjrandom_hwprog5/hex.h
+diff hex.cc ~/Current/240_20184fall/hwprogs/hwprog5/hwprog5realdirectory/mydirectory/hackerjrandom_hwprog5/hex.cc
+#
+diff main.h ~/Current/240_20184fall/hwprogs/hwprog5/hwprog5realdirectory/mydirectory/hackerjrandom_hwprog5/main.h
+diff main.cc ~/Current/240_20184fall/hwprogs/hwprog5/hwprog5realdirectory/mydirectory/hackerjrandom_hwprog5/main.cc
+
