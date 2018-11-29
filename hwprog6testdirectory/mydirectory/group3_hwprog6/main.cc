@@ -23,7 +23,7 @@ int main(int argc, char *argv[]) {
   Assembler assembler;
 
   Utils::CheckArgs(3, argc, argv, "infilename outfilename logfilename");
-  in_filename = static_cast<string>(argv[1]);
+  in_filename = static_cast<string>(argv[1]) + ".txt";
   binary_filename = static_cast<string>(argv[2]) + ".bin";
   out_filename = static_cast<string>(argv[2]) + ".txt";
   log_filename = static_cast<string>(argv[3]);
