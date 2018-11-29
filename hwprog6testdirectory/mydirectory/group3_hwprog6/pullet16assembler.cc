@@ -236,7 +236,7 @@ void Assembler::PrintSymbolTable() {
 #ifdef EBUG
   Utils::log_stream << "leave PrintSymbolTable" << endl;
 #endif
-  for(map<string, Symbol>::iterator s = symboltable_.begin(); s != symboltable_.end; ++s) {
+  for(map<string, Symbol>::iterator s = symboltable_.begin(); s != symboltable_.end(); ++s) {
     Utils::log_stream << s->second.ToString() << endl;
   }
 }
