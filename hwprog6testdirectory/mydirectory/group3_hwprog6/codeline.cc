@@ -34,7 +34,7 @@ CodeLine::~CodeLine() {
 string CodeLine::GetAddr() const {
   string returnvalue;
 
-  code goes here
+  // code goes here
   
   return returnvalue;
 }
@@ -92,14 +92,16 @@ string CodeLine::GetSymOperand() const {
  * Boolean indicator of the presence of a label.
 **/
 bool CodeLine::HasLabel() const {
-  return something
+  bool something = false;
+  return something;
 }
 
 /***************************************************************************
  * Boolean indicator of the presence of a symbolic operand.
 **/
 bool CodeLine::HasSymOperand() const {
-  return something
+  bool something = false;
+  return something;
 }
 
 /***************************************************************************
