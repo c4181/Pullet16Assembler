@@ -69,7 +69,7 @@ void Assembler::Assemble(Scanner& in_scanner, string binary_filename,
  *   symbol - the symbol that is invalid
 **/
 string Assembler::GetInvalidMessage(string leadingtext, string symbol) {
-
+  string returnvalue = "";
   return returnvalue;
 }
 
@@ -83,7 +83,6 @@ string Assembler::GetInvalidMessage(string leadingtext, string symbol) {
 **/
 string Assembler::GetInvalidMessage(string leadingtext, Hex hex) {
   string returnvalue = "";
-
   return returnvalue;
 }
 
@@ -95,7 +94,7 @@ string Assembler::GetInvalidMessage(string leadingtext, Hex hex) {
  *   badtext - the undefined symbol text
 **/
 string Assembler::GetUndefinedMessage(string badtext) {
-
+  string returnvalue = "";
   return returnvalue;
 }
 
@@ -161,7 +160,7 @@ void Assembler::PassTwo() {
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
 
-  string mnemonic = codelines_.at(pc_in_assembler_.GetMnemonic());
+  string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
   string opcode;
   string addressing_type;
   string sym_operand;
@@ -170,10 +169,10 @@ void Assembler::PassTwo() {
     opcode = opcode.find(mnemonic);
   }
 
-  addressing_type = codelines_.at(pc_in_assembler_.GetAddr());
+  addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
 
-  if (codelines_.at(pc_in_assembler_.HasSymOperand())) {
-    symoperand = codelines_.at(pc_in_assembler_.GetSymOperand());
+  if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
+    sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
   }
 
   
