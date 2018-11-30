@@ -11,11 +11,13 @@
 
 #include <iostream>
 #include <algorithm>
+#include <bitset>
 #include <map>
 #include <set>
 #include <string>
 #include <vector>
 
+using std::bitset;
 using std::cin;
 using std::cout;
 using std::endl;
