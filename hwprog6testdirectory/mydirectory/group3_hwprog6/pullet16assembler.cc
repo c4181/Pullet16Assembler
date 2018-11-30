@@ -48,9 +48,13 @@ void Assembler::Assemble(Scanner& in_scanner, string binary_filename,
   // Pass one
   // Produce the symbol table and detect errors in symbols.
 
+  PassOne(in_scanner);
+
   //////////////////////////////////////////////////////////////////////////
   // Pass two
   // Generate the machine code.
+  pc_in_assembler_ = 0;
+  PassTwo();
 
   //////////////////////////////////////////////////////////////////////////
   // Dump the results.
@@ -160,20 +164,64 @@ void Assembler::PassTwo() {
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
 
-  string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
-  string opcode;
-  string addressing_type;
-  string sym_operand;
+  while(codelines_.size() < pc_in_assembler_) {
+    string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
+    string opcode;
+    string addressing_type;
+    string sym_operand;
+    Symbol the_symbol;
+    int memory_address = -1;
+    string machine_code;
 
-  if (opcodes_.find(mnemonic) != opcodes_.end()) {
-    opcode = opcode.find(mnemonic);
+    // Retrieve all necessary values from codelines
+    if (opcodes_.find(mnemonic) != opcodes_.end()) {
+      opcode = opcodes_.find(mnemonic) -> second;
+    }
+
+    addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
+
+    if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
+      int operand_location = -1;
+      sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
+
+      if(symboltable_.find(sym_operand) != symboltable_.end()) {
+        the_symbol = symboltable_.find(sym_operand) -> second;
+        operand_location = the_symbol.GetLocation();
+      }
+
+      memory_address = codelines_.at(operand_location).GetHexObject().GetValue();
+      out << "Printing Hex Value " << memory_address << endl;
+    }
+
+    if (opcode != "111") {
+      machine_code = opcode;
+      // Set machine code for any instruction in Format 1
+      if (addressing_type == "*") {
+        machine_code += "1";
+      } else {
+        machine_code += "0";
+      }
+      machine_code += to_string(memory_address);
+
+      machinecode.push_back(machine_code);
+    } // Set machine code for any instruction in Format 2
+      else {
+      machine_code = opcode;
+      machine_code += "0";
+
+      if (mnemonic == "RD") {
+        machine_code += "000000000001";
+      } else if (mnemonic == "STP") {
+        machine_code += "000000000010";
+      } else if (mnemonic == "WRT") {
+        machine_code += "000000000011";
+      }
+
+      machinecode.push_back(machine_code);
+    }
+    ++pc_in_assembler_;
   }
 
-  addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
-
-  if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
-    sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
-  }
 
   
 

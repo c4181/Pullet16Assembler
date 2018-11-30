@@ -21,6 +21,7 @@ using std::cout;
 using std::endl;
 using std::max;
 using std::ofstream;
+using std::to_string;
 using std::set;
 using std::string;
 using std::vector;
@@ -54,7 +55,7 @@ class Assembler {
   int pc_in_assembler_;
   int maxpc_;
   vector<CodeLine> codelines_;
-  map<int, string> machinecode_;
+  vector<string> machinecode_;
   map<string, Symbol> symboltable_;
   map<string, string> opcodes_;
   set<string> mnemonics_;
