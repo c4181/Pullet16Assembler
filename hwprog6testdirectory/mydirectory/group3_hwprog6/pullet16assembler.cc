@@ -203,7 +203,7 @@ void Assembler::PassTwo() {
       }
       machine_code += to_string(memory_address);
 
-      machinecode.push_back(machine_code);
+      machinecode_.push_back(machine_code);
     } // Set machine code for any instruction in Format 2
       else {
       machine_code = opcode;
@@ -217,7 +217,7 @@ void Assembler::PassTwo() {
         machine_code += "000000000011";
       }
 
-      machinecode.push_back(machine_code);
+      machinecode_.push_back(machine_code);
     }
     ++pc_in_assembler_;
   }
@@ -265,7 +265,22 @@ void Assembler::PrintMachineCode(string binary_filename,
   Utils::log_stream << "enter PrintMachineCode" << " "
                     << binary_filename << endl;
 #endif
-  string s = "";
+
+  // Uses a bitset to convert the ascii to binary and then writes binary to
+  // a file 16 bits at a time                  
+  ofstream output_file(binary_filename, ofstream::binary);
+  if (output_file) {
+    char* buffer = new char[2];
+
+    for (int i = 0; i < machinecode_.size(); ++i) {
+      string ascii = machinecode_.at(i);
+      bitset<16> bs(ascii);
+      int the_bin = static_cast<int>(bs.to_ulong());
+      buffer = reinterpret_cast<char*>(&the_bin);
+      output_file.write(buffer, 2);
+    }
+    output_file.close();
+  }
 
 #ifdef EBUG
   Utils::log_stream << "leave PrintMachineCode" << endl;
