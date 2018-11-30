@@ -190,7 +190,6 @@ void Assembler::PassTwo() {
       }
 
       memory_address = codelines_.at(operand_location).GetHexObject().GetValue();
-      out << "Printing Hex Value " << memory_address << endl;
     }
 
     if (opcode != "111") {
