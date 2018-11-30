@@ -32,11 +32,7 @@ CodeLine::~CodeLine() {
  * Accessor for the 'addr_'.
 **/
 string CodeLine::GetAddr() const {
-  string returnvalue;
-
-  // code goes here
-  
-  return returnvalue;
+  return addr_;
 }
 
 /***************************************************************************
