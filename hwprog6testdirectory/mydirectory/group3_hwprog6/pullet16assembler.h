@@ -42,7 +42,7 @@ class Assembler {
   Assembler();
   virtual ~Assembler();
 
-  void Assemble(Scanner& in_scanner, string binary_filename,
+  void Assemble(string file_name, string binary_filename,
                 ofstream& out_stream);
 
  private:
@@ -65,7 +65,7 @@ class Assembler {
   string GetInvalidMessage(string leadingtext, string invalidstring);
   string GetInvalidMessage(string leadingtext, Hex hex);
   string GetUndefinedMessage(string badtext);
-  void PassOne(Scanner& in_scanner);
+  void PassOne(string file_name);
   void PassTwo();
   void PrintCodeLines();
   void PrintMachineCode(string binary_filename, ofstream& out_stream);

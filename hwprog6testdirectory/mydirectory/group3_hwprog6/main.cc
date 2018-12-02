@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 
   Utils::log_stream << kTag << "logfile '" << log_filename << endl;
 
-  assembler.Assemble(in_scanner, binary_filename, out_stream);
+  assembler.Assemble(in_filename, binary_filename, out_stream);
 
   Utils::log_stream << kTag << "Ending execution" << endl;
   Utils::log_stream.flush();

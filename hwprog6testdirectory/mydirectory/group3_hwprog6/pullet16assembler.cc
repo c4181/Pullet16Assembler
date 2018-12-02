@@ -38,7 +38,7 @@ Assembler::~Assembler() {
  *   in_scanner - the scanner to read for source code
  *   out_stream - the output stream to write to
 **/
-void Assembler::Assemble(Scanner& in_scanner, string binary_filename,
+void Assembler::Assemble(string file_name, string binary_filename,
                          ofstream& out_stream) {
 #ifdef EBUG
   Utils::log_stream << "enter Assemble" << endl;
@@ -48,7 +48,7 @@ void Assembler::Assemble(Scanner& in_scanner, string binary_filename,
   // Pass one
   // Produce the symbol table and detect errors in symbols.
 
-  PassOne(in_scanner);
+  PassOne(file_name);
 
   //////////////////////////////////////////////////////////////////////////
   // Pass two
@@ -115,39 +115,66 @@ string Assembler::GetUndefinedMessage(string badtext) {
  *   in_scanner - the input stream from which to read
  *   out-stream - the output stream to which to write
 **/
-void Assembler::PassOne(Scanner& in_scanner) {
+void Assembler::PassOne(string file_name) {
 #ifdef EBUG
   Utils::log_stream << "enter PassOne" << endl;
 #endif
-
+  pc_in_assembler_ = 0;
   int counter = 0;
   Symbol symbol;
+  string line;
   CodeLine codeline = CodeLine();
-  while(in_scanner.HasNext()){
-    string line = in_scanner.NextLine();
-    if(line.at(0) == '*'){
-      continue;
-    }
-    else if(line.size() < 4) {
-      line = "    " + line + "                                   ";
-      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3), line.substr(8,1),
-      line.substr(10,3), line.substr(14,5), line.substr(20), line);
-      codelines_.push_back(codeline);  
-    }
-    else if (line.size()>20 && line.at(20) == '*') {
-      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3), line.substr(8,1),
-      line.substr(10,3), line.substr(14,5), line.substr(20), line);
+  std::ifstream source(file_name);
+  while(getline(source,line)) {
+    if(line.at(0) == '*') { 
+      codeline.SetCommentsOnly(counter, line);
       codelines_.push_back(codeline);
-      symbol = Symbol(line,counter);
-      symboltable_[line.substr(0,3)] = symbol;
+      counter++;
     }
     else {
-      line = "    " + line;
-      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3), line.substr(8,1),
-      line.substr(10,3), line.substr(14,5), line.substr(20), line);
-      codelines_.push_back(codeline); 
+      while (line.size() < 20) {
+        line += " ";
+      }
+      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3),
+      line.substr(8,1), line.substr(10,3), line.substr(14,5), line.substr(20), line);
+      codelines_.push_back(codeline);
+      if (line.substr(0,3) != "   ") {
+        symbol = Symbol(line.substr(0,3),pc_in_assembler_);
+        symboltable_[line.substr(0,3)] = symbol;
+      }
+      counter++;
+      pc_in_assembler_++;
     }
-    counter++;
+  }
+  source.close();
+
+#ifdef EBUG
+  Utils::log_stream << "leave PassOne" << endl;
+#endif
+}
+
+/***************************************************************************
+ * Function 'PassTwo'.
+ * This function does pass two of the assembly process.
+**/
+void Assembler::PassTwo() {
+#ifdef EBUG
+  Utils::log_stream << "enter PassTwo" << endl;
+#endif
+
+  string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
+  string opcode;
+  string addressing_type;
+  string sym_operand;
+
+  if (opcodes_.find(mnemonic) != opcodes_.end()) {
+    opcode = opcode.find(mnemonic);
+  }
+
+  addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
+
+  if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
+    sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
   }
 
 #ifdef EBUG
@@ -299,7 +326,8 @@ void Assembler::PrintSymbolTable() {
   Utils::log_stream << "leave PrintSymbolTable" << endl;
 #endif
   for(map<string, Symbol>::iterator s = symboltable_.begin(); s != symboltable_.end(); ++s) {
-    Utils::log_stream << s->second.ToString() << endl;
+    Utils::log_stream << "SYM " << s->second.ToString().substr(0,3) << " " << 
+    s->second.GetLocation() << " " << s->second.GetErrorMessages() << endl;
   }
 }
 
