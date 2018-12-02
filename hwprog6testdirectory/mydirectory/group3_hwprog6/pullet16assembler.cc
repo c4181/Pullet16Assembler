@@ -162,35 +162,6 @@ void Assembler::PassTwo() {
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
 
-  string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
-  string opcode;
-  string addressing_type;
-  string sym_operand;
-
-  if (opcodes_.find(mnemonic) != opcodes_.end()) {
-    opcode = opcode.find(mnemonic);
-  }
-
-  addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
-
-  if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
-    sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
-  }
-
-#ifdef EBUG
-  Utils::log_stream << "leave PassOne" << endl;
-#endif
-}
-
-/***************************************************************************
- * Function 'PassTwo'.
- * This function does pass two of the assembly process.
-**/
-void Assembler::PassTwo() {
-#ifdef EBUG
-  Utils::log_stream << "enter PassTwo" << endl;
-#endif
-
   while(codelines_.size() < pc_in_assembler_) {
     string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
     string opcode;
