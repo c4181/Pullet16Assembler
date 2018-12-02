@@ -124,20 +124,24 @@ void Assembler::PassOne(string file_name) {
   Symbol symbol;
   string line;
   CodeLine codeline = CodeLine();
-  std::ifstream source(file_name);
+  std::ifstream source(file_name);    //open file
   while(getline(source,line)) {
+    // checks if the line is a comment
     if(line.at(0) == '*') { 
       codeline.SetCommentsOnly(counter, line);
       codelines_.push_back(codeline);
       counter++;
     }
     else {
+      // makes it so the line is at least 20 characters long
       while (line.size() < 20) {
         line += " ";
       }
+      // sets the codeline
       codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3),
       line.substr(8,1), line.substr(10,3), line.substr(14,5), line.substr(20), line);
       codelines_.push_back(codeline);
+      // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0,3) != "   ") {
         symbol = Symbol(line.substr(0,3),pc_in_assembler_);
         symboltable_[line.substr(0,3)] = symbol;
@@ -146,7 +150,7 @@ void Assembler::PassOne(string file_name) {
       pc_in_assembler_++;
     }
   }
-  source.close();
+  source.close(); // closes file
 
 #ifdef EBUG
   Utils::log_stream << "leave PassOne" << endl;
@@ -296,6 +300,7 @@ void Assembler::PrintSymbolTable() {
 #ifdef EBUG
   Utils::log_stream << "leave PrintSymbolTable" << endl;
 #endif
+  // goes through the symbol table and prints each element
   for(map<string, Symbol>::iterator s = symboltable_.begin(); s != symboltable_.end(); ++s) {
     Utils::log_stream << "SYM " << s->second.ToString().substr(0,3) << " " << 
     s->second.GetLocation() << " " << s->second.GetErrorMessages() << endl;
