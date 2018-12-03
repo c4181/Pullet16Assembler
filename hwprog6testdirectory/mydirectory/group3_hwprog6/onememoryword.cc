@@ -88,7 +88,7 @@ void OneMemoryWord::SetBitPattern(string what) {
 /***************************************************************************
  * Function 'Initialize'.
 **/
-//void OneMemoryWord::Initialize(Globals globals, string bit_pattern) {
+//  void OneMemoryWord::Initialize(Globals globals, string bit_pattern) {
 //  globals_ = globals;
 void OneMemoryWord::Initialize(string bit_pattern) {
   bit_pattern_ = bit_pattern;

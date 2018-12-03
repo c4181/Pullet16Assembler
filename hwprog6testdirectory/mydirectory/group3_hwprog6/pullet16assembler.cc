@@ -13,7 +13,6 @@
  * Constructor
 **/
 Assembler::Assembler() {
-
 }
 
 /***************************************************************************
@@ -124,33 +123,33 @@ void Assembler::PassOne(string file_name) {
   Symbol symbol;
   string line;
   CodeLine codeline = CodeLine();
-  std::ifstream source(file_name);    //open file
-  while(getline(source,line)) {
+  std::ifstream source(file_name);    // open file
+  while (getline(source, line)) {
     // checks if the line is a comment
-    if(line.at(0) == '*') { 
+    if (line.at(0) == '*') {
       codeline.SetCommentsOnly(counter, line);
       codelines_.push_back(codeline);
       counter++;
-    }
-    else {
+    } else {
       // makes it so the line is at least 20 characters long
       while (line.size() < 20) {
         line += " ";
       }
       // sets the codeline
-      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0,3), line.substr(4,3),
-      line.substr(8,1), line.substr(10,3), line.substr(14,5), line.substr(20), line);
+      codeline.SetCodeLine(counter, pc_in_assembler_, line.substr(0, 3),
+      line.substr(4, 3), line.substr(8, 1), line.substr(10, 3),
+      line.substr(14, 5), line.substr(20), line);
       codelines_.push_back(codeline);
       // checks if there is a symbol, if so adds it to the symbol table
-      if (line.substr(0,3) != "   ") {
-        symbol = Symbol(line.substr(0,3),pc_in_assembler_);
-        symboltable_[line.substr(0,3)] = symbol;
+      if (line.substr(0, 3) != "   ") {
+        symbol = Symbol(line.substr(0, 3), pc_in_assembler_);
+        symboltable_[line.substr(0, 3)] = symbol;
       }
       counter++;
       pc_in_assembler_++;
     }
   }
-  source.close(); // closes file
+  source.close();  // closes file
 
 #ifdef EBUG
   Utils::log_stream << "leave PassOne" << endl;
@@ -166,7 +165,7 @@ void Assembler::PassTwo() {
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
 
-  while(codelines_.size() < pc_in_assembler_) {
+  while (codelines_.size() < pc_in_assembler_) {
     string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
     string opcode;
     string addressing_type;
@@ -186,12 +185,13 @@ void Assembler::PassTwo() {
       int operand_location = -1;
       sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
 
-      if(symboltable_.find(sym_operand) != symboltable_.end()) {
+      if (symboltable_.find(sym_operand) != symboltable_.end()) {
         the_symbol = symboltable_.find(sym_operand) -> second;
         operand_location = the_symbol.GetLocation();
       }
 
-      memory_address = codelines_.at(operand_location).GetHexObject().GetValue();
+      memory_address = codelines_.at(operand_location).
+                       GetHexObject().GetValue();
     }
 
     if (opcode != "111") {
@@ -205,8 +205,7 @@ void Assembler::PassTwo() {
       machine_code += to_string(memory_address);
 
       machinecode_.push_back(machine_code);
-    } // Set machine code for any instruction in Format 2
-      else {
+    } else {  //  Set machine code for any instruction in Format 2
       machine_code = opcode;
       machine_code += "0";
 
@@ -222,9 +221,6 @@ void Assembler::PassTwo() {
     }
     ++pc_in_assembler_;
   }
-
-
-  
 
 #ifdef EBUG
   Utils::log_stream << "leave PassTwo" << endl;
@@ -268,7 +264,7 @@ void Assembler::PrintMachineCode(string binary_filename,
 #endif
 
   // Uses a bitset to convert the ascii to binary and then writes binary to
-  // a file 16 bits at a time                  
+  // a file 16 bits at a time
   ofstream output_file(binary_filename, ofstream::binary);
   if (output_file) {
     char* buffer = new char[2];
@@ -301,8 +297,9 @@ void Assembler::PrintSymbolTable() {
   Utils::log_stream << "leave PrintSymbolTable" << endl;
 #endif
   // goes through the symbol table and prints each element
-  for(map<string, Symbol>::iterator s = symboltable_.begin(); s != symboltable_.end(); ++s) {
-    Utils::log_stream << "SYM " << s->second.ToString().substr(0,3) << " " << 
+  for (map<string, Symbol>::iterator s = symboltable_.begin();
+        s != symboltable_.end(); ++s) {
+    Utils::log_stream << "SYM " << s->second.ToString().substr(0, 3) << " " <<
     s->second.GetLocation() << " " << s->second.GetErrorMessages() << endl;
   }
 }

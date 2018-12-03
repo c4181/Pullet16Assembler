@@ -75,7 +75,7 @@ void Symbol::SetMultiply() {
 bool Symbol::CheckInvalid() const {
   bool returnvalue = false;  // false means no, not invalid
 
-  if (isalpha(text_.at(0)) == 0) {  
+  if (isalpha(text_.at(0)) == 0) {
     // If the first character is not an alpha symbol
     returnvalue = true;
   }
