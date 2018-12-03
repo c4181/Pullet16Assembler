@@ -60,6 +60,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
   // Produce the symbol table and detect errors in symbols.
 
   PassOne(file_name);
+
   //////////////////////////////////////////////////////////////////////////
   // Pass two
   // Generate the machine code.
@@ -84,7 +85,10 @@ void Assembler::Assemble(string file_name, string binary_filename,
  *   symbol - the symbol that is invalid
 **/
 string Assembler::GetInvalidMessage(string leadingtext, string symbol) {
-  string returnvalue = "";
+  string returnvalue = "Value is invalid.\nTXT: ";
+  returnvalue += leadingtext;
+  returnvalue += "\tSYM: ";
+  returnvalue += symbol;
   return returnvalue;
 }
 
@@ -97,7 +101,10 @@ string Assembler::GetInvalidMessage(string leadingtext, string symbol) {
  *   hex - the hex operand that is invalid
 **/
 string Assembler::GetInvalidMessage(string leadingtext, Hex hex) {
-  string returnvalue = "";
+  string returnvalue = "Value is invalid.\nTXT: ";
+  returnvalue += leadingtext;
+  returnvalue += "\tHEX: ";
+  returnvalue += hex.ToString();
   return returnvalue;
 }
 
@@ -109,7 +116,8 @@ string Assembler::GetInvalidMessage(string leadingtext, Hex hex) {
  *   badtext - the undefined symbol text
 **/
 string Assembler::GetUndefinedMessage(string badtext) {
-  string returnvalue = "";
+  string returnvalue = "Symbol is undefined.\nSYM: ";
+  returnvalue += badtext;
   return returnvalue;
 }
 
@@ -183,7 +191,8 @@ void Assembler::PassTwo() {
     string addressing_type;
     string sym_operand;
     Symbol the_symbol;
-    int memory_address = -1;
+    int operand_location;
+    int memory_address = pc_in_assembler_;
     string machine_code;
 
     // Retrieve all necessary values from codelines
@@ -193,18 +202,15 @@ void Assembler::PassTwo() {
 
     addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
     if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
-      int operand_location = -1;
       sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
 
       if (symboltable_.find(sym_operand) != symboltable_.end()) {
         the_symbol = symboltable_.find(sym_operand) -> second;
         operand_location = the_symbol.GetLocation();
       }
-
-      memory_address = codelines_.at(operand_location).
-                       GetHexObject().GetValue();
+      memory_address = operand_location;
     }
-
+      cout << memory_address << endl;
     if (opcode != "111" || opcode!= "000") {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
@@ -213,7 +219,7 @@ void Assembler::PassTwo() {
       } else {
         machine_code += "0";
       }
-      machine_code += to_string(memory_address);
+      machine_code += memory_address;
 
       machinecode_.push_back(machine_code);
     } else {  //  Set machine code for any instruction in Format 2

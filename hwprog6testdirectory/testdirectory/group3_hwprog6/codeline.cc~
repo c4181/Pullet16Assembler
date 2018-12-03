@@ -5,7 +5,7 @@
  *
  * Author/copyright:  Duncan A. Buell.  All rights reserved.
  * Used with permission and modified by: Adarius Adams, Jeejun Kim, Andrew Gray, Christopher Moyer, Vinay Penmetsa
- * Date: 27 November 2018
+ * Date: 17 August 2018
 **/
 
 /***************************************************************************
@@ -14,7 +14,7 @@
 CodeLine::CodeLine() {
 }
 
-//  CodeLine::CodeLine(Globals globals) {
+//CodeLine::CodeLine(Globals globals) {
 //  globals_ = globals;
 //}
 
@@ -32,7 +32,11 @@ CodeLine::~CodeLine() {
  * Accessor for the 'addr_'.
 **/
 string CodeLine::GetAddr() const {
-  return addr_;
+  string returnvalue;
+
+  code goes here
+  }
+  return returnvalue;
 }
 
 /***************************************************************************
@@ -88,19 +92,14 @@ string CodeLine::GetSymOperand() const {
  * Boolean indicator of the presence of a label.
 **/
 bool CodeLine::HasLabel() const {
-  bool something = false;
-  return something;
+  return something
 }
 
 /***************************************************************************
  * Boolean indicator of the presence of a symbolic operand.
 **/
 bool CodeLine::HasSymOperand() const {
-  bool something = false;
-  if (symoperand_.size() != 0 && symoperand_ != "   "){
-    something = true;
-  }
-  return something;
+  return something
 }
 
 /***************************************************************************
@@ -152,9 +151,6 @@ void CodeLine::SetCodeLine(int linecounter, int pc, string label,
  *   line - the code line that is taken to be all comments
 **/
 void CodeLine::SetCommentsOnly(int linecounter, string line) {
-    code_ = line;
-    linecounter_ = linecounter;
-    is_all_comment_ = true;
 }
 
 /***************************************************************************

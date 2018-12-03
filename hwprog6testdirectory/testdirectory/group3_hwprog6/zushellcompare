@@ -1,0 +1,23 @@
+#diff xlog4.txt xlog4.txt.bup
+#diff xout4.txt xout4.txt.bup
+##
+#diff xlog5.txt xlog5.txt.bup
+diff xout5.txt xout5.txt.bup
+##
+#diff xlog6.txt xlog6.txt.bup
+#diff xout6.txt xout6.txt.bup
+##
+#diff ydatalog.txt ydatalog.txt.bup
+#diff ydataout.txt ydataout.txt.bup
+##
+#diff yfiblog.txt yfiblog.txt.bup
+#diff yfibout.txt yfibout.txt.bup
+##
+#diff ylooplog.txt ylooplog.txt.bup
+#diff yloopout.txt yloopout.txt.bup
+##
+#diff yreadwritelog.txt yreadwritelog.txt.bup
+#diff yreadwriteout.txt yreadwriteout.txt.bup
+##
+#diff ysquareslog.txt ysquareslog.txt.bup
+#diff ysquaresout.txt ysquaresout.txt.bup
