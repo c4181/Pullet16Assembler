@@ -48,7 +48,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
   // Produce the symbol table and detect errors in symbols.
 
   PassOne(file_name);
-
+  PrintSymbolTable();
   //////////////////////////////////////////////////////////////////////////
   // Pass two
   // Generate the machine code.
