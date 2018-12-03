@@ -338,6 +338,8 @@ void Assembler::SetNewPC(CodeLine codeline) {
   Utils::log_stream << "enter SetNewPC" << endl;
 #endif
 
+  pc_in_assembler_ = codeline.GetPC();
+
 #ifdef EBUG
   Utils::log_stream << "leave SetNewPC" << endl;
 #endif
