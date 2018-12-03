@@ -14,11 +14,7 @@ do
   echo " "
   echo "EXECUTING" $item
   cd $item
-<<<<<<< HEAD
   ./Aprog ../../ytestbr zmyout zmylog.txt
-=======
-  ./Aprog ../../adotoutsquares zmyout zmylog
->>>>>>> 69a11abc9ac83ad153cc5e04cb757a2929775866
   cd ..
 echo "EXECUTION COMPLETE"
 done
