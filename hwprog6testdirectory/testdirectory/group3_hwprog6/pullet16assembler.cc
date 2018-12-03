@@ -72,10 +72,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
  *   symbol - the symbol that is invalid
 **/
 string Assembler::GetInvalidMessage(string leadingtext, string symbol) {
-  string returnvalue = "Value is invalid.\nTXT: ";
-  returnvalue += leadingtext;
-  returnvalue += "\tSYM: ";
-  returnvalue += symbol;
+  string returnvalue = "";
   return returnvalue;
 }
 
@@ -88,10 +85,7 @@ string Assembler::GetInvalidMessage(string leadingtext, string symbol) {
  *   hex - the hex operand that is invalid
 **/
 string Assembler::GetInvalidMessage(string leadingtext, Hex hex) {
-  string returnvalue = "Value is invalid.\nTXT: ";
-  returnvalue += leadingtext;
-  returnvalue += "\tHEX: ";
-  returnvalue += hex.ToString();
+  string returnvalue = "";
   return returnvalue;
 }
 
@@ -103,8 +97,7 @@ string Assembler::GetInvalidMessage(string leadingtext, Hex hex) {
  *   badtext - the undefined symbol text
 **/
 string Assembler::GetUndefinedMessage(string badtext) {
-  string returnvalue = "Symbol is undefined.\nSYM: ";
-  returnvalue += badtext;
+  string returnvalue = "";
   return returnvalue;
 }
 
