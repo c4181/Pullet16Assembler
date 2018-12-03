@@ -85,14 +85,6 @@ string CodeLine::GetSymOperand() const {
 }
 
 /***************************************************************************
- * Accessor for the 'pc_'.
-**/
-int CodeLine::GetPC() const {
-  return pc_;
-}
-
-
-/***************************************************************************
  * Boolean indicator of the presence of a label.
 **/
 bool CodeLine::HasLabel() const {
