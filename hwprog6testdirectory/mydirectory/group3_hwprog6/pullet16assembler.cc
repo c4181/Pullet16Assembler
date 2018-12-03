@@ -66,6 +66,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
   // Generate the machine code.
   pc_in_assembler_ = 0;
   PassTwo();
+  PrintMachineCode(binary_filename, out_stream);
   
 
   //////////////////////////////////////////////////////////////////////////
@@ -184,9 +185,13 @@ void Assembler::PassTwo() {
 #ifdef EBUG
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
-
-  while (codelines_.size() > pc_in_assembler_) {
-    string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
+  int counter = 0;
+  while (codelines_.size() > counter) {
+    if(codelines_.at(counter).IsAllComment() == true){
+      counter++; 
+    }
+    else {
+    string mnemonic = codelines_.at(counter).GetMnemonic(); // gets mnemonic
     string opcode;
     string addressing_type;
     string sym_operand;
@@ -194,23 +199,23 @@ void Assembler::PassTwo() {
     int operand_location;
     int memory_address = pc_in_assembler_;
     string machine_code;
-
     // Retrieve all necessary values from codelines
+    // finds opcode in the codeline
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
-      opcode = opcodes_.find(mnemonic) -> second;
+      opcode = opcodes_.find(mnemonic) -> second;    
     }
-
-    addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
-    if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
-      sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
-
+    addressing_type = codelines_.at(counter).GetAddr();
+    if (codelines_.at(counter).HasSymOperand()) {
+      sym_operand = codelines_.at(counter).GetSymOperand();
       if (symboltable_.find(sym_operand) != symboltable_.end()) {
         the_symbol = symboltable_.find(sym_operand) -> second;
         operand_location = the_symbol.GetLocation();
       }
       memory_address = operand_location;
     }
-    if (opcode != "111" || opcode!= "000") {
+    // checks what the opcode is, then creates the machine code line
+    // based on the opcode
+    if (opcode != "111" && opcode != "000") {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
       if (addressing_type == "*") {
@@ -218,13 +223,11 @@ void Assembler::PassTwo() {
       } else {
         machine_code += "0";
       }
-      machine_code += memory_address;
-
+      machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
     } else {  //  Set machine code for any instruction in Format 2
       machine_code = opcode;
       machine_code += "0";
-
       if (mnemonic == "RD") {
         machine_code += "000000000001";
       } else if (mnemonic == "STP") {
@@ -232,14 +235,25 @@ void Assembler::PassTwo() {
       } else if (mnemonic == "WRT") {
         machine_code += "000000000011";
       } else if (mnemonic == "HEX") {
-        machine_code += DABnamespace::DecToBitString(
-          codelines_.at(pc_in_assembler_).GetHexObject().GetValue(), 16);
-      } else if (mnemonic == "END") {
+        machine_code = DABnamespace::DecToBitString(
+          codelines_.at(counter).GetHexObject().GetValue(), 16);
+      } else if (mnemonic == "BAN") {
+        machine_code = opcode;
+        if (addressing_type == "*") {
+          machine_code += "1";
+      } else {
+          machine_code += "0";
+      }
+        machine_code += DABnamespace::DecToBitString(memory_address, 12);
+      }
+        else if (mnemonic == "END") {
           machine_code += "000011110000";
         }
       machinecode_.push_back(machine_code);
     }
     ++pc_in_assembler_;
+    counter++;
+  }
   }
 
 #ifdef EBUG
@@ -285,11 +299,13 @@ void Assembler::PrintMachineCode(string binary_filename,
 
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
+  for (int i = 0; i < machinecode_.size()-1; i++) {
+    out_stream << machinecode_.at(i) << endl;
+  }
   ofstream output_file(binary_filename, ofstream::binary);
   if (output_file) {
     char* buffer = new char[2];
-
-    for (int i = 0; i < machinecode_.size(); ++i) {
+    for (int i = 0; i < machinecode_.size()-1; ++i) {
       string ascii = machinecode_.at(i);
       bitset<16> bs(ascii);
       int the_bin = static_cast<int>(bs.to_ulong());
