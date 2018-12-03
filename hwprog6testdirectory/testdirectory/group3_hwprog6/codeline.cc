@@ -85,6 +85,14 @@ string CodeLine::GetSymOperand() const {
 }
 
 /***************************************************************************
+ * Accessor for the 'pc_'.
+**/
+int CodeLine::GetPC() const {
+  return pc_;
+}
+
+
+/***************************************************************************
  * Boolean indicator of the presence of a label.
 **/
 bool CodeLine::HasLabel() const {
@@ -154,6 +162,7 @@ void CodeLine::SetCodeLine(int linecounter, int pc, string label,
 void CodeLine::SetCommentsOnly(int linecounter, string line) {
     code_ = line;
     linecounter_ = linecounter;
+    is_all_comment_ = true;
 }
 
 /***************************************************************************

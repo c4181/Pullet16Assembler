@@ -210,7 +210,6 @@ void Assembler::PassTwo() {
       }
       memory_address = operand_location;
     }
-      cout << memory_address << endl;
     if (opcode != "111" || opcode!= "000") {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
@@ -338,6 +337,8 @@ void Assembler::SetNewPC(CodeLine codeline) {
 #ifdef EBUG
   Utils::log_stream << "enter SetNewPC" << endl;
 #endif
+
+  pc_in_assembler_ = codeline.GetPC();
 
 #ifdef EBUG
   Utils::log_stream << "leave SetNewPC" << endl;

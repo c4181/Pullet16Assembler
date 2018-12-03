@@ -95,8 +95,8 @@ bool Symbol::CheckInvalid() const {
   char char1 = text_.at(1);
   char char2 = text_.at(2);
 
-  if(char == " ") {
-   if((char1 != " ") || (char2 != " ")) { 
+  if(char1 == ' ') {
+   if((char1 != ' ') || (char2 != ' ')) { 
    //starts blank,  non-blanks follow--WRONG!
    returnvalue = true; //false means no, not invalid.
    return returnvalue; //yes invalid
@@ -109,8 +109,8 @@ bool Symbol::CheckInvalid() const {
 
  //Not all blanks, and not leading blanks 
  //No middle blank, but then a non-blank
- if(char1 == " ") { 
-  if(char1 != " ") { 
+ if(char1 == ' ') { 
+  if(char1 != ' ') { 
     returnvalue = true; //false means no, not invalid.
     return returnvalue; //yes invalid.
   }
