@@ -1,0 +1,3 @@
+Main: Beginning execution
+Main: logfile 'zmylog.txt
+Main: Ending execution
