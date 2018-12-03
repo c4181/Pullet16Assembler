@@ -339,3 +339,4 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
   Utils::log_stream << "leave UpdateSymbolTable" << endl;
 #endif
 }
+
