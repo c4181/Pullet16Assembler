@@ -42,18 +42,30 @@ void Assembler::Assemble(string file_name, string binary_filename,
 #ifdef EBUG
   Utils::log_stream << "enter Assemble" << endl;
 #endif
-
+  opcodes_ = {                              {"BAN", "000"},
+                                            {"SUB", "001"},
+                                            {"STC", "010"},
+                                            {"AND", "011"},
+                                            {"ADD", "100"},
+                                            {"LD ", "101"},
+                                            {"BR ", "110"},
+                                            {"STP", "111"},
+                                            {"RD ", "111"},
+                                            {"WRT", "111"},
+                                            {"HEX", "000"},
+                                            {"END", "000"}
+                                          };
   //////////////////////////////////////////////////////////////////////////
   // Pass one
   // Produce the symbol table and detect errors in symbols.
 
   PassOne(file_name);
-  PrintSymbolTable();
   //////////////////////////////////////////////////////////////////////////
   // Pass two
   // Generate the machine code.
   pc_in_assembler_ = 0;
   PassTwo();
+  
 
   //////////////////////////////////////////////////////////////////////////
   // Dump the results.
@@ -165,7 +177,7 @@ void Assembler::PassTwo() {
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
 
-  while (codelines_.size() < pc_in_assembler_) {
+  while (codelines_.size() > pc_in_assembler_) {
     string mnemonic = codelines_.at(pc_in_assembler_).GetMnemonic();
     string opcode;
     string addressing_type;
@@ -180,7 +192,6 @@ void Assembler::PassTwo() {
     }
 
     addressing_type = codelines_.at(pc_in_assembler_).GetAddr();
-
     if (codelines_.at(pc_in_assembler_).HasSymOperand()) {
       int operand_location = -1;
       sym_operand = codelines_.at(pc_in_assembler_).GetSymOperand();
@@ -194,7 +205,7 @@ void Assembler::PassTwo() {
                        GetHexObject().GetValue();
     }
 
-    if (opcode != "111") {
+    if (opcode != "111" || opcode!= "000") {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
       if (addressing_type == "*") {
@@ -215,8 +226,12 @@ void Assembler::PassTwo() {
         machine_code += "000000000010";
       } else if (mnemonic == "WRT") {
         machine_code += "000000000011";
-      }
-
+      } else if (mnemonic == "HEX") {
+        machine_code += DABnamespace::DecToBitString(
+          codelines_.at(pc_in_assembler_).GetHexObject().GetValue(), 16);
+      } else if (mnemonic == "END") {
+          machine_code += "000011110000";
+        }
       machinecode_.push_back(machine_code);
     }
     ++pc_in_assembler_;

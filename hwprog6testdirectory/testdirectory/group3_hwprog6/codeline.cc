@@ -97,6 +97,9 @@ bool CodeLine::HasLabel() const {
 **/
 bool CodeLine::HasSymOperand() const {
   bool something = false;
+  if (symoperand_.size() != 0 && symoperand_ != "   "){
+    something = true;
+  }
   return something;
 }
 
@@ -149,6 +152,8 @@ void CodeLine::SetCodeLine(int linecounter, int pc, string label,
  *   line - the code line that is taken to be all comments
 **/
 void CodeLine::SetCommentsOnly(int linecounter, string line) {
+    code_ = line;
+    linecounter_ = linecounter;
 }
 
 /***************************************************************************
