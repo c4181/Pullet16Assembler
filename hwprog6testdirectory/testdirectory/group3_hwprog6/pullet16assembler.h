@@ -55,7 +55,7 @@ class Assembler {
   const string kDummyCodeD = "0000000011110000";
 
   int pc_in_assembler_;
-  int maxpc_;
+  int maxpc_ = 4096;
   vector<CodeLine> codelines_;
   vector<string> machinecode_;
   map<string, Symbol> symboltable_;

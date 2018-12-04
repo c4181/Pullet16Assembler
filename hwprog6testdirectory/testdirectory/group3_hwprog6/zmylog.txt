@@ -1,7 +1,8 @@
 Main: Beginning execution
 Main: logfile 'zmylog.txt
-SYM A    11
-SYM LUP   9
-SYM ONE  10
-SYM TOP   1
+SYM 68    2 INVALID
+SYM A1    6
+SYM B1   26
+SYM B2   27
+SYM STR   0 MULTIPLY
 Main: Ending execution

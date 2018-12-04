@@ -173,6 +173,7 @@ void CodeLine::SetCommentsOnly(int linecounter, string line) {
  *   messages - the string of messages
 **/
 void CodeLine::SetErrorMessages(string messages) {
+    error_messages_ += messages + "\n";
 }
 
 /***************************************************************************

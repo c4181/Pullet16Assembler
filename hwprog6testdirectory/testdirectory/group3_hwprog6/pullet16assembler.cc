@@ -164,9 +164,17 @@ void Assembler::PassOne(string file_name) {
       // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0, 3) != "   ") {
         UpdateSymbolTable(pc_in_assembler_, line.substr(0,3));
+        SetNewPC(codeline);
+      }
+      if(line.substr(4,3) == "DS ") {
+        if(codeline.GetHexObject().GetValue() < maxpc_ && 
+           codeline.GetHexObject().GetValue() > 0) {
+          pc_in_assembler_ += codeline.GetHexObject().GetValue() - 1;
+        }
       }
       counter++;
       pc_in_assembler_++;
+      cout << codeline.ToString() << endl;
     }
   }
   source.close();  // closes file
@@ -351,8 +359,12 @@ void Assembler::SetNewPC(CodeLine codeline) {
 #ifdef EBUG
   Utils::log_stream << "enter SetNewPC" << endl;
 #endif
-
-  pc_in_assembler_ = codeline.GetPC();
+  if(codeline.GetPC() < maxpc_){
+    pc_in_assembler_ = codeline.GetPC();
+  }
+  else {
+    codeline.SetErrorMessages("Error, PC out of range");
+  }
 
 #ifdef EBUG
   Utils::log_stream << "leave SetNewPC" << endl;
