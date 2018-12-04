@@ -67,7 +67,6 @@ void Assembler::Assemble(string file_name, string binary_filename,
   pc_in_assembler_ = 0;
   PassTwo();
   PrintMachineCode(binary_filename, out_stream);
-  
 
   //////////////////////////////////////////////////////////////////////////
   // Dump the results.
@@ -162,7 +161,7 @@ void Assembler::PassOne(string file_name) {
       codelines_.push_back(codeline);
       // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0, 3) != "   ") {
-        UpdateSymbolTable(pc_in_assembler_, line.substr(0,3));
+        UpdateSymbolTable(pc_in_assembler_, line.substr(0, 3));
       }
       counter++;
       pc_in_assembler_++;
@@ -185,11 +184,10 @@ void Assembler::PassTwo() {
 #endif
   int counter = 0;
   while (codelines_.size() > counter) {
-    if(codelines_.at(counter).IsAllComment() == true){
-      counter++; 
-    }
-    else {
-    string mnemonic = codelines_.at(counter).GetMnemonic(); // gets mnemonic
+    if (codelines_.at(counter).IsAllComment() == true) {
+      counter++;
+    } else {
+    string mnemonic = codelines_.at(counter).GetMnemonic();  // gets mnemonic
     string opcode;
     string addressing_type;
     string sym_operand;
@@ -200,7 +198,7 @@ void Assembler::PassTwo() {
     // Retrieve all necessary values from codelines
     // finds opcode in the codeline
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
-      opcode = opcodes_.find(mnemonic) -> second;    
+      opcode = opcodes_.find(mnemonic) -> second;
     }
     addressing_type = codelines_.at(counter).GetAddr();
     if (codelines_.at(counter).HasSymOperand()) {
@@ -243,8 +241,7 @@ void Assembler::PassTwo() {
           machine_code += "0";
       }
         machine_code += DABnamespace::DecToBitString(memory_address, 12);
-      }
-        else if (mnemonic == "END") {
+      } else if (mnemonic == "END") {
           machine_code += "000011110000";
         }
       machinecode_.push_back(machine_code);
@@ -374,8 +371,7 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
     if (symboltable_.count(symboltext) == 0) {
       symbol = Symbol(symboltext, pc);
       symboltable_[symboltext] = symbol;
-    }
-    else{
+    } else {
       symbol = Symbol(symboltext, 0);
       symbol.SetMultiply();
       symboltable_[symboltext] = symbol;
