@@ -67,6 +67,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
   pc_in_assembler_ = 0;
   PassTwo();
   PrintMachineCode(binary_filename, out_stream);
+  PrintSymbolTable();
   
 
   //////////////////////////////////////////////////////////////////////////
@@ -141,7 +142,6 @@ void Assembler::PassOne(string file_name) {
 #endif
   pc_in_assembler_ = 0;
   int counter = 0;
-  Symbol symbol;
   string line;
   CodeLine codeline = CodeLine();
   std::ifstream source(file_name);    // open file
@@ -163,8 +163,7 @@ void Assembler::PassOne(string file_name) {
       codelines_.push_back(codeline);
       // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0, 3) != "   ") {
-        symbol = Symbol(line.substr(0, 3), pc_in_assembler_);
-        symboltable_[line.substr(0, 3)] = symbol;
+        UpdateSymbolTable(pc_in_assembler_, line.substr(0,3));
       }
       counter++;
       pc_in_assembler_++;
@@ -191,7 +190,7 @@ void Assembler::PassTwo() {
       counter++; 
     }
     else {
-    string mnemonic = codelines_.at(counter).GetMnemonic();
+    string mnemonic = codelines_.at(counter).GetMnemonic(); // gets mnemonic
     string opcode;
     string addressing_type;
     string sym_operand;
@@ -200,8 +199,9 @@ void Assembler::PassTwo() {
     int memory_address = pc_in_assembler_;
     string machine_code;
     // Retrieve all necessary values from codelines
+    // finds opcode in the codeline
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
-      opcode = opcodes_.find(mnemonic) -> second;
+      opcode = opcodes_.find(mnemonic) -> second;    
     }
     addressing_type = codelines_.at(counter).GetAddr();
     if (codelines_.at(counter).HasSymOperand()) {
@@ -212,7 +212,8 @@ void Assembler::PassTwo() {
       }
       memory_address = operand_location;
     }
-
+    // checks what the opcode is, then creates the machine code line
+    // based on the opcode
     if (opcode != "111" && opcode != "000") {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
@@ -333,8 +334,7 @@ void Assembler::PrintSymbolTable() {
   // goes through the symbol table and prints each element
   for (map<string, Symbol>::iterator s = symboltable_.begin();
         s != symboltable_.end(); ++s) {
-    Utils::log_stream << "SYM " << s->second.ToString().substr(0, 3) << " " <<
-    s->second.GetLocation() << " " << s->second.GetErrorMessages() << endl;
+    Utils::log_stream << "SYM " << s->second.ToString() << endl;
   }
 }
 
@@ -370,7 +370,16 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
 #ifdef EBUG
   Utils::log_stream << "enter UpdateSymbolTable" << endl;
 #endif
-
+    Symbol symbol;
+    if (symboltable_.count(symboltext) < 1) {
+      symbol = Symbol(symboltext, pc);
+      symboltable_[symboltext] = symbol;
+    }
+    else{
+      symbol = Symbol(symboltext, 0);
+      symbol.SetMultiply();
+      symboltable_[symboltext] = symbol;
+    }
 #ifdef EBUG
   Utils::log_stream << "leave UpdateSymbolTable" << endl;
 #endif

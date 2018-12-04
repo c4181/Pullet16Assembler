@@ -1,3 +1,7 @@
 Main: Beginning execution
 Main: logfile 'zmylog.txt
+SYM A    11
+SYM LUP   9
+SYM ONE  10
+SYM TOP   1
 Main: Ending execution

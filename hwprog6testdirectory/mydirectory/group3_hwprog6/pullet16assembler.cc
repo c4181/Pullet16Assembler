@@ -67,6 +67,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
   pc_in_assembler_ = 0;
   PassTwo();
   PrintMachineCode(binary_filename, out_stream);
+  PrintSymbolTable();
   
 
   //////////////////////////////////////////////////////////////////////////
@@ -333,8 +334,7 @@ void Assembler::PrintSymbolTable() {
   // goes through the symbol table and prints each element
   for (map<string, Symbol>::iterator s = symboltable_.begin();
         s != symboltable_.end(); ++s) {
-    Utils::log_stream << "SYM " << s->second.ToString().substr(0, 3) << " " <<
-    s->second.GetLocation() << " " << s->second.GetErrorMessages() << endl;
+    Utils::log_stream << "SYM " << s->second.ToString() << endl;
   }
 }
 
@@ -371,7 +371,7 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
   Utils::log_stream << "enter UpdateSymbolTable" << endl;
 #endif
     Symbol symbol;
-    if (symboltable_.count(symboltext) == 0) {
+    if (symboltable_.count(symboltext) < 1) {
       symbol = Symbol(symboltext, pc);
       symboltable_[symboltext] = symbol;
     }
