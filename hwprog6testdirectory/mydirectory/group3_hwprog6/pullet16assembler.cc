@@ -67,10 +67,7 @@ void Assembler::Assemble(string file_name, string binary_filename,
   pc_in_assembler_ = 0;
   PassTwo();
   PrintMachineCode(binary_filename, out_stream);
-<<<<<<< HEAD
-=======
   PrintSymbolTable();
->>>>>>> 89c53a1aa859ea412b0bf5bc0d3d7c3fb5f2fc7a
 
   //////////////////////////////////////////////////////////////////////////
   // Dump the results.
