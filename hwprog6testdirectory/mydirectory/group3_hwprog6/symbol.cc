@@ -128,7 +128,7 @@ bool Symbol::CheckInvalid() const {
     returnvalue = true;
     return returnvalue;
   }
-
+  
   return returnvalue;
 }
 

@@ -141,7 +141,6 @@ void Assembler::PassOne(string file_name) {
 #endif
   pc_in_assembler_ = 0;
   int counter = 0;
-  Symbol symbol;
   string line;
   CodeLine codeline = CodeLine();
   std::ifstream source(file_name);    // open file
@@ -163,8 +162,7 @@ void Assembler::PassOne(string file_name) {
       codelines_.push_back(codeline);
       // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0, 3) != "   ") {
-        symbol = Symbol(line.substr(0, 3), pc_in_assembler_);
-        symboltable_[line.substr(0, 3)] = symbol;
+        UpdateSymbolTable(pc_in_assembler_, line.substr(0,3));
       }
       counter++;
       pc_in_assembler_++;
@@ -372,7 +370,16 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
 #ifdef EBUG
   Utils::log_stream << "enter UpdateSymbolTable" << endl;
 #endif
-
+    Symbol symbol;
+    if (symboltable_.count(symboltext) == 0) {
+      symbol = Symbol(symboltext, pc);
+      symboltable_[symboltext] = symbol;
+    }
+    else{
+      symbol = Symbol(symboltext, 0);
+      symbol.SetMultiply();
+      symboltable_[symboltext] = symbol;
+    }
 #ifdef EBUG
   Utils::log_stream << "leave UpdateSymbolTable" << endl;
 #endif
