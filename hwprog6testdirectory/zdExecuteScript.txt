@@ -14,7 +14,7 @@ do
   echo " "
   echo "EXECUTING" $item
   cd $item
-  ./Aprog ../../ysquaressource zmyout zmylog.txt
+  ./Aprog ../../ytestban zmyout zmylog.txt
   cd ..
 echo "EXECUTION COMPLETE"
 done
