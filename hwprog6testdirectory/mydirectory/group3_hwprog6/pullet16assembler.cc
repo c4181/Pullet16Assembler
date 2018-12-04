@@ -174,7 +174,6 @@ void Assembler::PassOne(string file_name) {
       }
       counter++;
       pc_in_assembler_++;
-      cout << codeline.ToString() << endl;
     }
   }
   source.close();  // closes file
