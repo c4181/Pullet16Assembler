@@ -181,6 +181,8 @@ void Assembler::PassOne(string file_name) {
         if (codeline.GetHexObject().GetValue() < maxpc_ &&
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
+        } else {
+          pc_in_assembler_--;
         }
       }
       // if it is end stays on the same pc
