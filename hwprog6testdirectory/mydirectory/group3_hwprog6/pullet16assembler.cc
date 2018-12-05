@@ -216,6 +216,7 @@ void Assembler::PassTwo() {
     Symbol the_symbol;
     Symbol label;
     int operand_location;
+    int org_counter;
     int ds_counter = 0;
     int memory_address = pc_in_assembler_;
     string machine_code;
@@ -232,7 +233,6 @@ void Assembler::PassTwo() {
     }
     addressing_type = codelines_.at(counter).GetAddr();
     label = symboltable_[codelines_.at(counter).GetLabel()];
-    cout << label.ToString() << endl;
     if(label.ToString().substr(0,3) != "   " && label.HasAnError()) {
       codelines_.at(counter).SetErrorMessages(label.GetErrorMessages());
       has_an_error_ = true;
@@ -251,15 +251,6 @@ void Assembler::PassTwo() {
         operand_location = the_symbol.GetLocation();
       }
       memory_address = operand_location;
-      if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) {
-        valid_symbol = false;
-        machine_code = kDummyCodeA;
-        machinecode_.push_back(machine_code);
-    }
-    if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) {
-      valid_symbol = false;
-      machine_code = kDummyCodeA;
-      machinecode_.push_back(machine_code);
     }
     // checks what the opcode is, then creates the machine code line
     // based on the opcode
@@ -302,29 +293,39 @@ void Assembler::PassTwo() {
         }
         machine_code += DABnamespace::DecToBitString(memory_address, 12);
       } else if (mnemonic == "END") {
-          machine_code += "";
+          machine_code = "";
           pc_in_assembler_--;
         } else if (mnemonic == "DS ") {
           if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
             codelines_.at(counter).GetHexObject().GetValue() > 0) {
+            org_counter = pc_in_assembler_;
             pc_in_assembler_ +=
             codelines_.at(counter).GetHexObject().GetValue() - 1;
             machine_code = "1111000000000000";
+            machinecode_.push_back(machine_code);
+            while (org_counter < pc_in_assembler_) {
+              machinecode_.push_back(kDummyCodeA);
+              org_counter++;
+            }
+            machine_code = "";
           } else {
             machine_code = kDummyCodeA;
             codelines_.at(counter).SetErrorMessages("DS ALLOCATION " +
             codelines_.at(counter).GetHexObject().GetText() +
             " IS INVALID");
             has_an_error_ = true;
-            cout << "C" << endl;
           }
       } else if (mnemonic == "ORG") {
           if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
             codelines_.at(counter).GetHexObject().
             GetValue() > 0) {
-            pc_in_assembler_ = codelines_.at(counter).
-            GetHexObject().GetValue() - 1;
-            machine_code = kDummyCodeC;
+            machine_code = "";
+            org_counter = pc_in_assembler_;
+            pc_in_assembler_ = codelines_.at(counter).GetHexObject().GetValue();
+            while (org_counter < pc_in_assembler_) {
+              machinecode_.push_back(kDummyCodeA);
+              org_counter++;
+            }
             }
           else {
             codelines_.at(counter).SetErrorMessages("ERROR, " + 
@@ -345,7 +346,7 @@ void Assembler::PassTwo() {
   Utils::log_stream << "leave PassTwo" << endl;
 #endif
 }
-}
+
 /***************************************************************************
  * Function 'PrintCodeLines'.
  * This function prints the code lines.
