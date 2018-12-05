@@ -183,12 +183,8 @@ void Assembler::PassOne(string file_name) {
           pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
         }
       }
-<<<<<<< HEAD
-      if (line.substr(4, 3) == "END") {
-=======
       // if it is end stays on the same pc
       if (line.substr(4, 3) == "END") {
->>>>>>> a1576e8b1aafcac6890402fac8fd2332cec3e6db
         pc_in_assembler_--;
       }
       counter++;
