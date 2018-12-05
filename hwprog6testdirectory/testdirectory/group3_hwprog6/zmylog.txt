@@ -1,7 +1,91 @@
 Main: Beginning execution
 Main: logfile 'zmylog.txt
-SYM 68    2 INVALID
-SYM A1   19
-SYM B2   36
-SYM STR   0 MULTIPLY
+PASS ONE
+SYM AA1  24
+SYM BB1  25
+SYM IDX  23
+SYM ONE  22
+SYM SSS  40
+SYM STO  27
+SYM TMP  26
+SYM TOP   3
+
+PASS TWO
+*23 567 9 123 56789 1
+*ll mmm a sss hhhhh * comment
+    2    0  000000000000      LD     ID X           LD    IDX       * load ACC with value at IDX
+    3    1  000000000001      ADD    ST O           ADD   STO       * add loop value to initial address
+    4    2  000000000010      STC    ST O           STC   STO       * store that address at STO
+*
+    6    3  000000000011 TOP  LD     BB 1    TOP    LD    BB1       * load ACC with value at BB1
+    7    4  000000000100      STC    TM P           STC   TMP       * store that value at TMP
+    8    5  000000000101      LD     BB 1           LD    BB1       * reload ACC with value at BB1
+    9    6  000000000110      ADD    AA 1           ADD   AA1       * add in value at AA1
+   10    7  000000000111      WRT                   WRT             * write the new Fib number
+   11    8  000000001000      STC  * ST O           STC * STO       * store ACC where STO is pointing to
+   12    9  000000001001      LD   * ST O           LD  * STO       * load ACC from where STO is pointing to
+   13   10  000000001010      STC    BB 1           STC   BB1       * store ACC where STO is pointing to
+   14   11  000000001011      LD     TM P           LD    TMP       * load the old BB1 from TMP
+   15   12  000000001100      STC    AA 1           STC   AA1       * store ACC where STO is pointing to
+*
+   17   13  000000001101      LD     ID X           LD    IDX       * reload ACC with the counter
+   18   14  000000001110      ADD    ON E           ADD   ONE       * increment counter
+   19   15  000000001111      STC    ID X           STC   IDX       * store this new address at STO
+   20   16  000000010000      LD     ST O           LD    STO       * load our pointer
+   21   17  000000010001      ADD    ON E           ADD   ONE       * increment by one
+   22   18  000000010010      STC    ST O           STC   STO       * store it back
+   23   19  000000010011      LD     ID X           LD    IDX       * reload ACC with the counter
+   24   20  000000010100      BAN    TO P           BAN   TOP       * loop until done
+   25   21  000000010101      STP                   STP             
+*
+   27   22  000000010110 ONE  HEX         +0 ONE    HEX       +0001 * we need a constant 1
+   28   23  000000010111 IDX  HEX         -0 IDX    HEX       -0005 * loop index
+   29   24  000000011000 AA1  HEX         +0 AA1    HEX       +0008 * smaller of two values to add 
+   30   25  000000011001 BB1  HEX         +0 BB1    HEX       +000D * larger of two values to add
+   31   26  000000011010 TMP  DS          +0 TMP    DS        +0001 * temp storage
+   32   27  000000011011 STO  HEX         +0 STO    HEX       +0028 * address in SSS at which to store
+   33   28  000000011100      ORG         +0        ORG       +0028 * set PC location for SSS at +0020 
+   34   40  000000101000 SSS  DS          +0 SSS    DS        +0010 
+   35   56  000000111000      END                   END             
+
+SYM AA1  24
+SYM BB1  25
+SYM IDX  23
+SYM ONE  22
+SYM SSS  40
+SYM STO  27
+SYM TMP  26
+SYM TOP   3
+
+1100110011001100
+1100110011001100
+1100110011001100
+1010000000011001
+1100110011001100
+1100110011001100
+1100110011001100
+1110000000000011
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1100110011001100
+1110000000000010
+0000000000000001
+1111111111111011
+0000000000001000
+0000000000001101
+1111000000000000
+0000000000101000
+1111000000000000
+1111000000000000
+0000
 Main: Ending execution

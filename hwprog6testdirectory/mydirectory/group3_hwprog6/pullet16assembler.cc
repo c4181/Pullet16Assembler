@@ -60,20 +60,21 @@ void Assembler::Assemble(string file_name, string binary_filename,
   //////////////////////////////////////////////////////////////////////////
   // Pass one
   // Produce the symbol table and detect errors in symbols.
-
+  Utils::log_stream << "PASS ONE" << endl;
   PassOne(file_name);
-
+  PrintSymbolTable();
   //////////////////////////////////////////////////////////////////////////
   // Pass two
   // Generate the machine code.
+  Utils::log_stream << "\n" << "PASS TWO" << endl;
   pc_in_assembler_ = 0;
   PassTwo();
-  PrintMachineCode(binary_filename, out_stream);
+  PrintCodeLines();
   PrintSymbolTable();
-
+  Utils::log_stream << endl;
   //////////////////////////////////////////////////////////////////////////
   // Dump the results.
-
+  PrintMachineCode(binary_filename, out_stream);
 #ifdef EBUG
   Utils::log_stream << "leave Assemble" << endl;
 #endif
@@ -165,21 +166,24 @@ void Assembler::PassOne(string file_name) {
       codelines_.push_back(codeline);
       // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0, 3) != "   ") {
-        UpdateSymbolTable(pc_in_assembler_, line.substr(0,3));
+        UpdateSymbolTable(pc_in_assembler_, line.substr(0, 3));
         SetNewPC(codeline);
       }
-      // if the mnemonic is DS, iterates the PC appropriately 
-      if(line.substr(4,3) == "DS ") {
-        if(codeline.GetHexObject().GetValue() < maxpc_ && 
+      // if the mnemonic is DS, iterates the PC appropriately
+      if (line.substr(4, 3) == "DS ") {
+        if (codeline.GetHexObject().GetValue() < maxpc_ &&
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ += codeline.GetHexObject().GetValue() - 1;
         }
       }
-      if(line.substr(4,3) == "ORG") {
-        if(codeline.GetHexObject().GetValue() < maxpc_ && 
+      if (line.substr(4, 3) == "ORG") {
+        if (codeline.GetHexObject().GetValue() < maxpc_ &&
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
         }
+      }
+      if (line.substr(4,3) == "END") {
+        pc_in_assembler_--;
       }
       counter++;
       pc_in_assembler_++;
@@ -210,43 +214,55 @@ void Assembler::PassTwo() {
     string addressing_type;
     string sym_operand;
     Symbol the_symbol;
+    Symbol label;
     int operand_location;
+    int ds_counter = 0;
     int memory_address = pc_in_assembler_;
     string machine_code;
     bool valid_symbol = true;
-    bool valid_mnemonic = true;
     // Retrieve all necessary values from codelines
     // finds opcode in the codeline
+    if (opcodes_.count(mnemonic) == 0) {
+      codelines_.at(counter).SetErrorMessages("MNEMONIC " + mnemonic + 
+      " IS INVALID");
+      has_an_error_ = true;
+    }
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
       opcode = opcodes_.find(mnemonic) -> second;
     }
     addressing_type = codelines_.at(counter).GetAddr();
+    label = symboltable_[codelines_.at(counter).GetLabel()];
+    cout << label.ToString() << endl;
+    if(label.ToString().substr(0,3) != "   " && label.HasAnError()) {
+      codelines_.at(counter).SetErrorMessages(label.GetErrorMessages());
+      has_an_error_ = true;
+    }
     if (codelines_.at(counter).HasSymOperand()) {
       sym_operand = codelines_.at(counter).GetSymOperand();
       if (symboltable_.count(sym_operand) == 0) {
-        valid_symbol = 0;
+        valid_symbol = false;
         machine_code = kDummyCodeA;
         machinecode_.push_back(machine_code);
+        codelines_.at(counter).SetErrorMessages("SYMBOL " + sym_operand + " IS UNDEFINED");
+        has_an_error_ = true;
       }
       if (symboltable_.find(sym_operand) != symboltable_.end()) {
         the_symbol = symboltable_.find(sym_operand) -> second;
-        operand_location = the_symbol.GetLocation();  
+        operand_location = the_symbol.GetLocation();
       }
       memory_address = operand_location;
+      if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) {
+        valid_symbol = false;
+        machine_code = kDummyCodeA;
+        machinecode_.push_back(machine_code);
     }
-    if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) { 
-      valid_symbol = false;
-      machine_code = kDummyCodeA;
-      machinecode_.push_back(machine_code);
-    }
-    if (opcodes_.count(mnemonic) == 0) {
-      valid_mnemonic = false;
-      machine_code = kDummyCodeA;
-      machinecode_.push_back(machine_code);
     }
     // checks what the opcode is, then creates the machine code line
     // based on the opcode
-    if (opcode != "111" && opcode != "000" && valid_symbol && valid_mnemonic) {
+    if (mnemonic == "END") {
+      found_end_statement_ = true;
+    }
+    if (opcode != "111" && opcode != "000" && valid_symbol) {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
       if (addressing_type == "*") {
@@ -256,21 +272,21 @@ void Assembler::PassTwo() {
       }
       machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
-    } else if (valid_symbol && valid_mnemonic) {  //  Set machine code for any instruction in Format 2
+    } else if (valid_symbol) {
+      //  Set machine code for any instruction in Format 2
       machine_code = opcode;
       machine_code += "0";
-      if (mnemonic == "RD") {
+      if (mnemonic == "RD ") {
         machine_code += "000000000001";
       } else if (mnemonic == "STP") {
         machine_code += "000000000010";
       } else if (mnemonic == "WRT") {
         machine_code += "000000000011";
       } else if (mnemonic == "HEX") {
-        if(!codelines_.at(counter).GetHexObject().HasAnError()){
+        if (!codelines_.at(counter).GetHexObject().HasAnError()) {
         machine_code = DABnamespace::DecToBitString(
           codelines_.at(counter).GetHexObject().GetValue(), 16);
-        }
-        else {
+        } else {
           machine_code = kDummyCodeC;
         }
       } else if (mnemonic == "BAN") {
@@ -282,26 +298,39 @@ void Assembler::PassTwo() {
         }
         machine_code += DABnamespace::DecToBitString(memory_address, 12);
       } else if (mnemonic == "END") {
-          machine_code += "000011110000";
-        }
-        else if(mnemonic == "DS ") {
-          if(codelines_.at(counter).GetHexObject().GetValue() < maxpc_ && 
+          machine_code += "";
+          pc_in_assembler_--;
+        } else if (mnemonic == "DS ") {
+          if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
             codelines_.at(counter).GetHexObject().GetValue() > 0) {
-            pc_in_assembler_ += codelines_.at(counter).GetHexObject().GetValue() - 1;
+            pc_in_assembler_ +=
+            codelines_.at(counter).GetHexObject().GetValue() - 1;
             machine_code = "1111000000000000";
-          }
-          else {
+          } else {
             machine_code = kDummyCodeA;
+            codelines_.at(counter).SetErrorMessages("DS ALLOCATION " +
+            codelines_.at(counter).GetHexObject().GetText() +
+            " IS INVALID");
+            has_an_error_ = true;
+            cout << "C" << endl;
+          }
+      } else if (mnemonic == "ORG") {
+          if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
+            codelines_.at(counter).GetHexObject().
+            GetValue() > 0) {
+            pc_in_assembler_ = codelines_.at(counter).
+            GetHexObject().GetValue() - 1;
+            machine_code = kDummyCodeC;
+            }
+          else {
+            codelines_.at(counter).SetErrorMessages("ERROR, " + 
+            codelines_.at(counter).GetHexObject().GetText() + " is out of bounds");
+            has_an_error_ = true;
           }
       }
-        else if(mnemonic == "ORG") {
-          if(codelines_.at(counter).GetHexObject().GetValue() < maxpc_ && 
-            codelines_.at(counter).GetHexObject().GetValue() > 0) {
-            pc_in_assembler_ = codelines_.at(counter).GetHexObject().GetValue() - 1;
-          }
-          machine_code = kDummyCodeC;
+      if (machine_code != "" ) { 
+        machinecode_.push_back(machine_code);
       }
-      machinecode_.push_back(machine_code);
     }
     ++pc_in_assembler_;
     counter++;
@@ -324,12 +353,18 @@ void Assembler::PrintCodeLines() {
   string s = "";
 
   for (auto iter = codelines_.begin(); iter != codelines_.end(); ++iter) {
-    s += (*iter).ToString() + '\n';
+    if ((*iter).IsAllComment()){
+      s += (*iter).GetCode() + '\n'; 
+    }
+    else {
+      s += (*iter).ToString() + '\n';
+    }
   }
 
   if (!found_end_statement_) {
     s += "\n***** ERROR -- NO 'END' STATEMENT\n";
     has_an_error_ = true;
+    cout << "E" << endl;
   }
 
 #ifdef EBUG
@@ -348,33 +383,38 @@ void Assembler::PrintMachineCode(string binary_filename,
   Utils::log_stream << "enter PrintMachineCode" << " "
                     << binary_filename << endl;
 #endif
-  if (has_an_error_ == false) { 
+  if (found_end_statement_  && has_an_error_ == false) {
   int i = 0;
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
-    while (i < machinecode_.size()) {
-      out_stream << machinecode_.at(i) << endl;
-      i++;
+  if (found_end_statement_ && has_an_error_ == false) {
+  for (int i = 0; i < machinecode_.size(); i++) {
+    out_stream << machinecode_.at(i) << endl;
+    Utils::log_stream << machinecode_.at(i) << endl;
+  }
+  ofstream output_file(binary_filename, ofstream::binary);
+  if (output_file) {
+    char* buffer = new char[2];
+    for (int i = 0; i < machinecode_.size()-1; ++i) {
+      string ascii = machinecode_.at(i);
+      bitset<16> bs(ascii);
+      int the_bin = static_cast<int>(bs.to_ulong());
+      buffer = reinterpret_cast<char*>(&the_bin);
+      output_file.write(buffer, 2);
     }
-    ofstream output_file(binary_filename, ofstream::binary);
-    if (output_file) {
-      char* buffer = new char[2];
-      for (int i = 0; i < machinecode_.size()-1; ++i) {
-        string ascii = machinecode_.at(i);
-        bitset<16> bs(ascii);
-        int the_bin = static_cast<int>(bs.to_ulong());
-        buffer = reinterpret_cast<char*>(&the_bin);
-        output_file.write(buffer, 2);
-      }
-      output_file.close();
-    }
+    output_file.close();
+  }
+  }
+  else {
+    Utils::log_stream << "ERRORS EXIST IN CODE" << endl;
+    Utils::log_stream << "NO MACHINE CODE GENERATED" << endl;
   }
 
 #ifdef EBUG
   Utils::log_stream << "leave PrintMachineCode" << endl;
 #endif
 }
-
+}
 /******************************************************************************
  * Function 'PrintSymbolTable'.
  * This function prints the symbol table.
@@ -390,7 +430,7 @@ void Assembler::PrintSymbolTable() {
   // goes through the symbol table and prints each element
   for (map<string, Symbol>::iterator s = symboltable_.begin();
         s != symboltable_.end(); ++s) {
-    if (s->second.ToString().substr(0,3) != "   ") {
+    if (s->second.ToString().substr(0, 3) != "   ") {
     Utils::log_stream << "SYM " << s->second.ToString() << endl;
     }
   }
@@ -410,11 +450,10 @@ void Assembler::SetNewPC(CodeLine codeline) {
   Utils::log_stream << "enter SetNewPC" << endl;
 #endif
   // sets new pc
-  if(codeline.GetPC() < maxpc_ && codeline.GetPC() > 0){
+  if (codeline.GetPC() < maxpc_ && codeline.GetPC() >= 0) {
     pc_in_assembler_ = codeline.GetPC();
-  }
-  else {
-    codeline.SetErrorMessages("Error, PC out of range");
+  } else {
+    has_an_error_ = true;
   }
 
 #ifdef EBUG
@@ -438,9 +477,7 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
       symbol = Symbol(symboltext, pc);
       symboltable_[symboltext] = symbol;
     } else {
-      symbol = symboltable_.find(symboltext)->second;
-      symbol.SetMultiply();
-      symboltable_[symboltext] = symbol;
+      symboltable_.find(symboltext)->second.SetMultiply();
     }
 #ifdef EBUG
   Utils::log_stream << "leave UpdateSymbolTable" << endl;

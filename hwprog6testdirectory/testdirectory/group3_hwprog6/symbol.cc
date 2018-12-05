@@ -41,14 +41,14 @@ string Symbol::GetErrorMessages() const {
   bool previouserror = false;
   string error_messages = "";
   if (is_invalid_) {
-    error_messages += "**** ERROR -- SYMBOL" + text_ + "IS INVALID";
+    error_messages += "**** ERROR -- SYMBOL " + text_ + " IS INVALID";
     previouserror = true;
   }
   if (is_multiply_) {
     if (previouserror) {
      error_messages += "\n";
     }
-  error_messages += "**** ERROR -- SYMBOL" + text_ + "IS MULTIPLY DEFINED";
+  error_messages += "**** ERROR -- SYMBOL " + text_ + " IS MULTIPLY DEFINED";
   }
   return error_messages;
 }
