@@ -295,7 +295,7 @@ void Assembler::PassTwo() {
           codelines_.at(counter).SetErrorMessages("ERROR, " + 
           codelines_.at(counter).GetHexObject().GetText()  +
           " IS INVALID");
-        }   // 000 machine code printing
+        }   // 000 machine_code
       } else if (mnemonic == "BAN") {
         machine_code = opcode;
         if (addressing_type == "*") {
