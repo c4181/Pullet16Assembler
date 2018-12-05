@@ -283,6 +283,9 @@ void Assembler::PassTwo() {
           codelines_.at(counter).GetHexObject().GetValue(), 16);
         } else {
           machine_code = kDummyCodeC;
+          codelines_.at(counter).SetErrorMessages("ERROR, " + 
+          codelines_.at(counter).GetHexObject().GetText()  +
+          " IS INVALID");
         }
       } else if (mnemonic == "BAN") {
         machine_code = opcode;
@@ -369,7 +372,6 @@ void Assembler::PrintCodeLines() {
   if (!found_end_statement_) {
     s += "\n***** ERROR -- NO 'END' STATEMENT\n";
     has_an_error_ = true;
-    cout << "E" << endl;
   }
 
 #ifdef EBUG
@@ -393,6 +395,7 @@ void Assembler::PrintMachineCode(string binary_filename,
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
   if (found_end_statement_ && has_an_error_ == false) {
+
   for (int i = 0; i < machinecode_.size(); i++) {
     out_stream << machinecode_.at(i) << endl;
     Utils::log_stream << machinecode_.at(i) << endl;
@@ -410,16 +413,16 @@ void Assembler::PrintMachineCode(string binary_filename,
     output_file.close();
   }
   }
-  else {
+  } else {
+  
     Utils::log_stream << "ERRORS EXIST IN CODE" << endl;
     Utils::log_stream << "NO MACHINE CODE GENERATED" << endl;
   }
-
 #ifdef EBUG
   Utils::log_stream << "leave PrintMachineCode" << endl;
 #endif
 }
-}
+
 /******************************************************************************
  * Function 'PrintSymbolTable'.
  * This function prints the symbol table.
