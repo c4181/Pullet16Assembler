@@ -26,7 +26,7 @@ using std::string;
 class Hex {
  public:
   Hex();
-  Hex(string hexoperand);
+  explicit Hex(string hexoperand);
   virtual ~Hex();
 
   string GetErrorMessages() const;

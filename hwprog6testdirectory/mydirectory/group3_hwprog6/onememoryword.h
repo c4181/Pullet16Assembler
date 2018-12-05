@@ -27,7 +27,7 @@ using std::string;
 class OneMemoryWord {
  public:
   OneMemoryWord();
-  OneMemoryWord(string thestring);
+  explicit OneMemoryWord(string thestring);
   virtual ~OneMemoryWord();
 
   string GetAddressBits() const;
