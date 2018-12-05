@@ -256,6 +256,10 @@ void Assembler::PassTwo() {
         machine_code = kDummyCodeA;
         machinecode_.push_back(machine_code);
     }
+    if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) {
+      valid_symbol = false;
+      machine_code = kDummyCodeA;
+      machinecode_.push_back(machine_code);
     }
     // checks what the opcode is, then creates the machine code line
     // based on the opcode
@@ -341,7 +345,7 @@ void Assembler::PassTwo() {
   Utils::log_stream << "leave PassTwo" << endl;
 #endif
 }
-
+}
 /***************************************************************************
  * Function 'PrintCodeLines'.
  * This function prints the code lines.
