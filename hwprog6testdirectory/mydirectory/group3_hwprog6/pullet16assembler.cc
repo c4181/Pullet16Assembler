@@ -176,12 +176,14 @@ void Assembler::PassOne(string file_name) {
           pc_in_assembler_ += codeline.GetHexObject().GetValue() - 1;
         }
       }
+      // if it is org, iterates pc
       if (line.substr(4, 3) == "ORG") {
         if (codeline.GetHexObject().GetValue() < maxpc_ &&
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
         }
       }
+      // if it is end stays on the same pc
       if (line.substr(4,3) == "END") {
         pc_in_assembler_--;
       }
@@ -205,6 +207,7 @@ void Assembler::PassTwo() {
   Utils::log_stream << "enter PassTwo" << endl;
 #endif
   int counter = 0;
+  // iterates through codeline
   while (codelines_.size() > counter) {
     if (codelines_.at(counter).IsAllComment() == true) {
       counter++;
@@ -223,20 +226,25 @@ void Assembler::PassTwo() {
     bool valid_symbol = true;
     // Retrieve all necessary values from codelines
     // finds opcode in the codeline
+
+    // checks if mnemonic is legitimate
     if (opcodes_.count(mnemonic) == 0) {
       codelines_.at(counter).SetErrorMessages("MNEMONIC " + mnemonic + 
       " IS INVALID");
       has_an_error_ = true;
     }
+    // gets mnemonic
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
       opcode = opcodes_.find(mnemonic) -> second;
     }
     addressing_type = codelines_.at(counter).GetAddr();
+    // checks if label is legitimate
     label = symboltable_[codelines_.at(counter).GetLabel()];
     if(label.ToString().substr(0,3) != "   " && label.HasAnError()) {
       codelines_.at(counter).SetErrorMessages(label.GetErrorMessages());
       has_an_error_ = true;
     }
+    // checks if the symoperand is legitimate
     if (codelines_.at(counter).HasSymOperand()) {
       sym_operand = codelines_.at(counter).GetSymOperand();
       if (symboltable_.count(sym_operand) == 0) {
@@ -268,7 +276,8 @@ void Assembler::PassTwo() {
       machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
     } else if (valid_symbol) {
-      //  Set machine code for any instruction in Format 2
+      //  Set machine code for any instruction in Format 2, and checks if it is a valid
+      //  instruction or not
       machine_code = opcode;
       machine_code += "0";
       if (mnemonic == "RD ") {
@@ -286,7 +295,7 @@ void Assembler::PassTwo() {
           codelines_.at(counter).SetErrorMessages("ERROR, " + 
           codelines_.at(counter).GetHexObject().GetText()  +
           " IS INVALID");
-        }
+        }   // 000 machine code printing
       } else if (mnemonic == "BAN") {
         machine_code = opcode;
         if (addressing_type == "*") {
@@ -318,7 +327,7 @@ void Assembler::PassTwo() {
             " IS INVALID");
             has_an_error_ = true;
           }
-      } else if (mnemonic == "ORG") {
+      } else if (mnemonic == "ORG") {   
           if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
             codelines_.at(counter).GetHexObject().
             GetValue() > 0) {
@@ -359,7 +368,7 @@ void Assembler::PrintCodeLines() {
   Utils::log_stream << "enter PrintCodeLines" << endl;
 #endif
   string s = "";
-
+  // prints each codeline
   for (auto iter = codelines_.begin(); iter != codelines_.end(); ++iter) {
     if ((*iter).IsAllComment()){
       s += (*iter).GetCode() + '\n'; 
