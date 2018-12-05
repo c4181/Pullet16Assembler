@@ -54,7 +54,8 @@ void Assembler::Assemble(string file_name, string binary_filename,
                                             {"WRT", "111"},
                                             {"HEX", "000"},
                                             {"END", "000"},
-                                            {"DS ", "000"}
+                                            {"DS ", "000"},
+                                            {"ORG", "000"}
                                           };
   //////////////////////////////////////////////////////////////////////////
   // Pass one
@@ -142,6 +143,7 @@ void Assembler::PassOne(string file_name) {
 #endif
   pc_in_assembler_ = 0;
   int counter = 0;
+  int org_counter;
   string line;
   CodeLine codeline = CodeLine();
   std::ifstream source(file_name);    // open file
@@ -171,6 +173,12 @@ void Assembler::PassOne(string file_name) {
         if(codeline.GetHexObject().GetValue() < maxpc_ && 
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ += codeline.GetHexObject().GetValue() - 1;
+        }
+      }
+      if(line.substr(4,3) == "ORG") {
+        if(codeline.GetHexObject().GetValue() < maxpc_ && 
+           codeline.GetHexObject().GetValue() > 0) {
+          pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
         }
       }
       counter++;
@@ -206,6 +214,7 @@ void Assembler::PassTwo() {
     int memory_address = pc_in_assembler_;
     string machine_code;
     bool valid_symbol = true;
+    bool valid_mnemonic = true;
     // Retrieve all necessary values from codelines
     // finds opcode in the codeline
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
@@ -230,10 +239,14 @@ void Assembler::PassTwo() {
       machine_code = kDummyCodeA;
       machinecode_.push_back(machine_code);
     }
-
+    if (opcodes_.count(mnemonic) == 0) {
+      valid_mnemonic = false;
+      machine_code = kDummyCodeA;
+      machinecode_.push_back(machine_code);
+    }
     // checks what the opcode is, then creates the machine code line
     // based on the opcode
-    if (opcode != "111" && opcode != "000" && valid_symbol) {
+    if (opcode != "111" && opcode != "000" && valid_symbol && valid_mnemonic) {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
       if (addressing_type == "*") {
@@ -243,7 +256,7 @@ void Assembler::PassTwo() {
       }
       machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
-    } else if (valid_symbol) {  //  Set machine code for any instruction in Format 2
+    } else if (valid_symbol && valid_mnemonic) {  //  Set machine code for any instruction in Format 2
       machine_code = opcode;
       machine_code += "0";
       if (mnemonic == "RD") {
@@ -253,15 +266,20 @@ void Assembler::PassTwo() {
       } else if (mnemonic == "WRT") {
         machine_code += "000000000011";
       } else if (mnemonic == "HEX") {
+        if(!codelines_.at(counter).GetHexObject().HasAnError()){
         machine_code = DABnamespace::DecToBitString(
           codelines_.at(counter).GetHexObject().GetValue(), 16);
+        }
+        else {
+          machine_code = kDummyCodeC;
+        }
       } else if (mnemonic == "BAN") {
         machine_code = opcode;
         if (addressing_type == "*") {
           machine_code += "1";
-      } else {
+        } else {
           machine_code += "0";
-      }
+        }
         machine_code += DABnamespace::DecToBitString(memory_address, 12);
       } else if (mnemonic == "END") {
           machine_code += "000011110000";
@@ -275,6 +293,13 @@ void Assembler::PassTwo() {
           else {
             machine_code = kDummyCodeA;
           }
+      }
+        else if(mnemonic == "ORG") {
+          if(codelines_.at(counter).GetHexObject().GetValue() < maxpc_ && 
+            codelines_.at(counter).GetHexObject().GetValue() > 0) {
+            pc_in_assembler_ = codelines_.at(counter).GetHexObject().GetValue() - 1;
+          }
+          machine_code = kDummyCodeC;
       }
       machinecode_.push_back(machine_code);
     }
@@ -323,24 +348,26 @@ void Assembler::PrintMachineCode(string binary_filename,
   Utils::log_stream << "enter PrintMachineCode" << " "
                     << binary_filename << endl;
 #endif
+  if (has_an_error_ == false) { 
   int i = 0;
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
-  while (i < machinecode_.size()) {
-    out_stream << machinecode_.at(i) << endl;
-    i++;
-  }
-  ofstream output_file(binary_filename, ofstream::binary);
-  if (output_file) {
-    char* buffer = new char[2];
-    for (int i = 0; i < machinecode_.size()-1; ++i) {
-      string ascii = machinecode_.at(i);
-      bitset<16> bs(ascii);
-      int the_bin = static_cast<int>(bs.to_ulong());
-      buffer = reinterpret_cast<char*>(&the_bin);
-      output_file.write(buffer, 2);
+    while (i < machinecode_.size()) {
+      out_stream << machinecode_.at(i) << endl;
+      i++;
     }
-    output_file.close();
+    ofstream output_file(binary_filename, ofstream::binary);
+    if (output_file) {
+      char* buffer = new char[2];
+      for (int i = 0; i < machinecode_.size()-1; ++i) {
+        string ascii = machinecode_.at(i);
+        bitset<16> bs(ascii);
+        int the_bin = static_cast<int>(bs.to_ulong());
+        buffer = reinterpret_cast<char*>(&the_bin);
+        output_file.write(buffer, 2);
+      }
+      output_file.close();
+    }
   }
 
 #ifdef EBUG
@@ -363,7 +390,9 @@ void Assembler::PrintSymbolTable() {
   // goes through the symbol table and prints each element
   for (map<string, Symbol>::iterator s = symboltable_.begin();
         s != symboltable_.end(); ++s) {
+    if (s->second.ToString().substr(0,3) != "   ") {
     Utils::log_stream << "SYM " << s->second.ToString() << endl;
+    }
   }
 }
 
@@ -409,7 +438,7 @@ void Assembler::UpdateSymbolTable(int pc, string symboltext) {
       symbol = Symbol(symboltext, pc);
       symboltable_[symboltext] = symbol;
     } else {
-      symbol = Symbol(symboltext, 0);
+      symbol = symboltable_.find(symboltext)->second;
       symbol.SetMultiply();
       symboltable_[symboltext] = symbol;
     }
