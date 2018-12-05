@@ -165,18 +165,18 @@ void Assembler::PassOne(string file_name) {
       codelines_.push_back(codeline);
       // checks if there is a symbol, if so adds it to the symbol table
       if (line.substr(0, 3) != "   ") {
-        UpdateSymbolTable(pc_in_assembler_, line.substr(0,3));
+        UpdateSymbolTable(pc_in_assembler_, line.substr(0, 3));
         SetNewPC(codeline);
       }
-      // if the mnemonic is DS, iterates the PC appropriately 
-      if(line.substr(4,3) == "DS ") {
-        if(codeline.GetHexObject().GetValue() < maxpc_ && 
+      // if the mnemonic is DS, iterates the PC appropriately
+      if (line.substr(4, 3) == "DS ") {
+        if (codeline.GetHexObject().GetValue() < maxpc_ &&
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ += codeline.GetHexObject().GetValue() - 1;
         }
       }
-      if(line.substr(4,3) == "ORG") {
-        if(codeline.GetHexObject().GetValue() < maxpc_ && 
+      if (line.substr(4, 3) == "ORG") {
+        if (codeline.GetHexObject().GetValue() < maxpc_ &&
            codeline.GetHexObject().GetValue() > 0) {
           pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
         }
@@ -230,11 +230,11 @@ void Assembler::PassTwo() {
       }
       if (symboltable_.find(sym_operand) != symboltable_.end()) {
         the_symbol = symboltable_.find(sym_operand) -> second;
-        operand_location = the_symbol.GetLocation();  
+        operand_location = the_symbol.GetLocation();
       }
       memory_address = operand_location;
     }
-    if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) { 
+    if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) {
       valid_symbol = false;
       machine_code = kDummyCodeA;
       machinecode_.push_back(machine_code);
@@ -256,7 +256,8 @@ void Assembler::PassTwo() {
       }
       machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
-    } else if (valid_symbol && valid_mnemonic) {  //  Set machine code for any instruction in Format 2
+    } else if (valid_symbol && valid_mnemonic) {
+      //  Set machine code for any instruction in Format 2
       machine_code = opcode;
       machine_code += "0";
       if (mnemonic == "RD") {
@@ -266,11 +267,10 @@ void Assembler::PassTwo() {
       } else if (mnemonic == "WRT") {
         machine_code += "000000000011";
       } else if (mnemonic == "HEX") {
-        if(!codelines_.at(counter).GetHexObject().HasAnError()){
+        if (!codelines_.at(counter).GetHexObject().HasAnError()) {
         machine_code = DABnamespace::DecToBitString(
           codelines_.at(counter).GetHexObject().GetValue(), 16);
-        }
-        else {
+        } else {
           machine_code = kDummyCodeC;
         }
       } else if (mnemonic == "BAN") {
@@ -283,21 +283,21 @@ void Assembler::PassTwo() {
         machine_code += DABnamespace::DecToBitString(memory_address, 12);
       } else if (mnemonic == "END") {
           machine_code += "000011110000";
-        }
-        else if(mnemonic == "DS ") {
-          if(codelines_.at(counter).GetHexObject().GetValue() < maxpc_ && 
+        } else if (mnemonic == "DS ") {
+          if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
             codelines_.at(counter).GetHexObject().GetValue() > 0) {
-            pc_in_assembler_ += codelines_.at(counter).GetHexObject().GetValue() - 1;
+            pc_in_assembler_ +=
+            codelines_.at(counter).GetHexObject().GetValue() - 1;
             machine_code = "1111000000000000";
-          }
-          else {
+          } else {
             machine_code = kDummyCodeA;
           }
-      }
-        else if(mnemonic == "ORG") {
-          if(codelines_.at(counter).GetHexObject().GetValue() < maxpc_ && 
-            codelines_.at(counter).GetHexObject().GetValue() > 0) {
-            pc_in_assembler_ = codelines_.at(counter).GetHexObject().GetValue() - 1;
+      } else if (mnemonic == "ORG") {
+          if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
+            codelines_.at(counter).GetHexObject().
+            GetValue() > 0) {
+            pc_in_assembler_ = codelines_.at(counter).
+            GetHexObject().GetValue() - 1;
           }
           machine_code = kDummyCodeC;
       }
@@ -348,7 +348,7 @@ void Assembler::PrintMachineCode(string binary_filename,
   Utils::log_stream << "enter PrintMachineCode" << " "
                     << binary_filename << endl;
 #endif
-  if (has_an_error_ == false) { 
+  if (has_an_error_ == false) {
   int i = 0;
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
@@ -390,7 +390,7 @@ void Assembler::PrintSymbolTable() {
   // goes through the symbol table and prints each element
   for (map<string, Symbol>::iterator s = symboltable_.begin();
         s != symboltable_.end(); ++s) {
-    if (s->second.ToString().substr(0,3) != "   ") {
+    if (s->second.ToString().substr(0, 3) != "   ") {
     Utils::log_stream << "SYM " << s->second.ToString() << endl;
     }
   }
@@ -410,10 +410,9 @@ void Assembler::SetNewPC(CodeLine codeline) {
   Utils::log_stream << "enter SetNewPC" << endl;
 #endif
   // sets new pc
-  if(codeline.GetPC() < maxpc_ && codeline.GetPC() > 0){
+  if (codeline.GetPC() < maxpc_ && codeline.GetPC() > 0) {
     pc_in_assembler_ = codeline.GetPC();
-  }
-  else {
+  } else {
     codeline.SetErrorMessages("Error, PC out of range");
   }
 
