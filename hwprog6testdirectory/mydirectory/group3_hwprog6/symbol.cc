@@ -85,42 +85,13 @@ void Symbol::SetMultiply() {
 **/
 bool Symbol::CheckInvalid() const {
   bool returnvalue = false;  // false means no, not invalid
-<<<<<<< HEAD
-
   if (text_ == "   ") {
     return false;  // not invalid
-=======
-  if (text_ == "   ") {
-    return false;  // not invalid
->>>>>>> 89c53a1aa859ea412b0bf5bc0d3d7c3fb5f2fc7a
   }
   char char0 = text_.at(0);
   char char1 = text_.at(1);
   char char2 = text_.at(2);
 
-<<<<<<< HEAD
-  if (char1 == ' ') {
-    if ((char1 != ' ') || (char2 != ' ')) {
-  // starts blank,  non-blanks follow--WRONG!
-  returnvalue = true;  // false means no, not invalid.
-  return returnvalue;  // yes invalid
-  } else {
-  returnvalue = false;  // false means no, not invalid
-  return returnvalue;  // no, true
-    }
-  }
-
-  // Not all blanks, and not leading blanks
-  // No middle blank, but then a non-blank
-  if (char1 == ' ') {
-    if (char1 != ' ') {
-      returnvalue = true;  // false means no, not invalid.
-      return returnvalue;  // yes invalid.
-    }
-  }
-  // Getting this far, then the symbol is not completely blank.
-  // If blanks are present they will all be on the RHS.
-=======
   if (char0 == ' ') {
     if ((char1 != ' ') || (char2 != ' ')) {
     // starts blank,  non-blanks follow--WRONG!
@@ -142,7 +113,6 @@ bool Symbol::CheckInvalid() const {
   }
   // Getting this far, then the symbol is not completely blank.
   // If blanks are present they will all be on the RHS.
->>>>>>> 89c53a1aa859ea412b0bf5bc0d3d7c3fb5f2fc7a
   if (isalpha(text_.at(0)) == 0) {
     // If the first character is not an alpha symbol
     returnvalue = true;

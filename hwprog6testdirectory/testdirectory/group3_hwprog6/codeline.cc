@@ -105,7 +105,7 @@ bool CodeLine::HasLabel() const {
 **/
 bool CodeLine::HasSymOperand() const {
   bool something = false;
-  if (symoperand_.size() != 0 && symoperand_ != "   "){
+  if (symoperand_.size() != 0 && symoperand_ != "   ") {
     something = true;
   }
   return something;

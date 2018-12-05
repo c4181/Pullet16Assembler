@@ -53,7 +53,8 @@ void Assembler::Assemble(string file_name, string binary_filename,
                                             {"RD ", "111"},
                                             {"WRT", "111"},
                                             {"HEX", "000"},
-                                            {"END", "000"}
+                                            {"END", "000"},
+                                            {"DS ", "000"}
                                           };
   //////////////////////////////////////////////////////////////////////////
   // Pass one
@@ -204,6 +205,7 @@ void Assembler::PassTwo() {
     int operand_location;
     int memory_address = pc_in_assembler_;
     string machine_code;
+    bool valid_symbol = true;
     // Retrieve all necessary values from codelines
     // finds opcode in the codeline
     if (opcodes_.find(mnemonic) != opcodes_.end()) {
@@ -212,15 +214,26 @@ void Assembler::PassTwo() {
     addressing_type = codelines_.at(counter).GetAddr();
     if (codelines_.at(counter).HasSymOperand()) {
       sym_operand = codelines_.at(counter).GetSymOperand();
+      if (symboltable_.count(sym_operand) == 0) {
+        valid_symbol = 0;
+        machine_code = kDummyCodeA;
+        machinecode_.push_back(machine_code);
+      }
       if (symboltable_.find(sym_operand) != symboltable_.end()) {
         the_symbol = symboltable_.find(sym_operand) -> second;
-        operand_location = the_symbol.GetLocation();
+        operand_location = the_symbol.GetLocation();  
       }
       memory_address = operand_location;
     }
+    if (symboltable_[codelines_.at(counter).GetLabel()].HasAnError()) { 
+      valid_symbol = false;
+      machine_code = kDummyCodeA;
+      machinecode_.push_back(machine_code);
+    }
+
     // checks what the opcode is, then creates the machine code line
     // based on the opcode
-    if (opcode != "111" && opcode != "000") {
+    if (opcode != "111" && opcode != "000" && valid_symbol) {
       machine_code = opcode;
       // Set machine code for any instruction in Format 1
       if (addressing_type == "*") {
@@ -230,7 +243,7 @@ void Assembler::PassTwo() {
       }
       machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
-    } else {  //  Set machine code for any instruction in Format 2
+    } else if (valid_symbol) {  //  Set machine code for any instruction in Format 2
       machine_code = opcode;
       machine_code += "0";
       if (mnemonic == "RD") {
@@ -253,6 +266,16 @@ void Assembler::PassTwo() {
       } else if (mnemonic == "END") {
           machine_code += "000011110000";
         }
+        else if(mnemonic == "DS ") {
+          if(codelines_.at(counter).GetHexObject().GetValue() < maxpc_ && 
+            codelines_.at(counter).GetHexObject().GetValue() > 0) {
+            pc_in_assembler_ += codelines_.at(counter).GetHexObject().GetValue() - 1;
+            machine_code = "1111000000000000";
+          }
+          else {
+            machine_code = kDummyCodeA;
+          }
+      }
       machinecode_.push_back(machine_code);
     }
     ++pc_in_assembler_;
@@ -300,11 +323,12 @@ void Assembler::PrintMachineCode(string binary_filename,
   Utils::log_stream << "enter PrintMachineCode" << " "
                     << binary_filename << endl;
 #endif
-
+  int i = 0;
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
-  for (int i = 0; i < machinecode_.size()-1; i++) {
+  while (i < machinecode_.size()) {
     out_stream << machinecode_.at(i) << endl;
+    i++;
   }
   ofstream output_file(binary_filename, ofstream::binary);
   if (output_file) {

@@ -40,16 +40,15 @@ Symbol::~Symbol() {
 string Symbol::GetErrorMessages() const {
   bool previouserror = false;
   string error_messages = "";
-  
-  if(is_invalid_) { 
+  if (is_invalid_) {
     error_messages += "**** ERROR -- SYMBOL" + text_ + "IS INVALID";
     previouserror = true;
   }
-  if(is_multiply_) { 
-    if(previouserror) {
+  if (is_multiply_) {
+    if (previouserror) {
      error_messages += "\n";
     }
-   error_messages += "**** ERROR -- SYMBOL" + text_ + "IS MULTIPLY DEFINED";
+  error_messages += "**** ERROR -- SYMBOL" + text_ + "IS MULTIPLY DEFINED";
   }
   return error_messages;
 }
@@ -86,60 +85,57 @@ void Symbol::SetMultiply() {
 **/
 bool Symbol::CheckInvalid() const {
   bool returnvalue = false;  // false means no, not invalid
-  if(text_ == "   ") {
-    return false; //not invalid
+  if (text_ == "   ") {
+    return false;  // not invalid
   }
-  
   char char0 = text_.at(0);
   char char1 = text_.at(1);
   char char2 = text_.at(2);
 
-  if(char0 == ' ') {
-   if((char1 != ' ') || (char2 != ' ')) { 
-   //starts blank,  non-blanks follow--WRONG!
-     returnvalue = true; //false means no, not invalid.
-     return returnvalue; //yes invalid
-  } 
-   else {
-     returnvalue = false; //false means no, not invalid
-     return returnvalue; //no, true
-   }
- }
-
- //Not all blanks, and not leading blanks 
- //No middle blank, but then a non-blank
- if(char1 == ' ') { 
-  if(char2 != ' ') { 
-    returnvalue = true; //false means no, not invalid.
-    return returnvalue; //yes invalid.
+  if (char0 == ' ') {
+    if ((char1 != ' ') || (char2 != ' ')) {
+    // starts blank,  non-blanks follow--WRONG!
+     returnvalue = true;  // false means no, not invalid.
+     return returnvalue;  // yes invalid
+  } else {
+     returnvalue = false;  // false means no, not invalid
+     return returnvalue;  // no, true
+    }
   }
- }
- //Getting this far, then the symbol is not completely blank.
- //If blanks are present they will all be on the RHS. 
+
+  // Not all blanks, and not leading blanks
+  // No middle blank, but then a non-blank
+  if (char1 == ' ') {
+    if (char2 != ' ') {
+    returnvalue = true;  // false means no, not invalid.
+    return returnvalue;  // yes invalid.
+    }
+  }
+  // Getting this far, then the symbol is not completely blank.
+  // If blanks are present they will all be on the RHS.
   if (isalpha(text_.at(0)) == 0) {
     // If the first character is not an alpha symbol
     returnvalue = true;
-    return returnvalue; //yes invalid
+    return returnvalue;  // yes invalid
   }
-  if(char1 == ' ' && char2 == ' '){
+  if (char1 == ' ' && char2 == ' ') {
     return returnvalue;
   }
 
-  if (text_.size() == 2 && isalnum(text_.at(1)) == 0) { // 
+  if (text_.size() == 2 && isalnum(text_.at(1)) == 0) {  //
     returnvalue = true;
     return returnvalue;
   }
-  if (char2 == ' ') { 
+  if (char2 == ' ') {
     return returnvalue;
   }
   if (isalnum(text_.at(1)) == 0 || isalnum(text_.at(2)) == 0) {
     // If the second or third character is not alphanumeric
     returnvalue = true;
     return returnvalue;
-  }
-  
+    }
   return returnvalue;
-}
+  }
 
 /******************************************************************************
  * Function 'ToString'.
