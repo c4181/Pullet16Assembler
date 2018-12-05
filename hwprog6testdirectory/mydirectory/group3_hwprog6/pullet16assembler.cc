@@ -183,8 +183,12 @@ void Assembler::PassOne(string file_name) {
           pc_in_assembler_ = codeline.GetHexObject().GetValue() - 1;
         }
       }
+<<<<<<< HEAD
+      if (line.substr(4, 3) == "END") {
+=======
       // if it is end stays on the same pc
-      if (line.substr(4,3) == "END") {
+      if (line.substr(4, 3) == "END") {
+>>>>>>> a1576e8b1aafcac6890402fac8fd2332cec3e6db
         pc_in_assembler_--;
       }
       counter++;
@@ -229,7 +233,7 @@ void Assembler::PassTwo() {
 
     // checks if mnemonic is legitimate
     if (opcodes_.count(mnemonic) == 0) {
-      codelines_.at(counter).SetErrorMessages("MNEMONIC " + mnemonic + 
+      codelines_.at(counter).SetErrorMessages("MNEMONIC " + mnemonic +
       " IS INVALID");
       has_an_error_ = true;
     }
@@ -240,7 +244,7 @@ void Assembler::PassTwo() {
     addressing_type = codelines_.at(counter).GetAddr();
     // checks if label is legitimate
     label = symboltable_[codelines_.at(counter).GetLabel()];
-    if(label.ToString().substr(0,3) != "   " && label.HasAnError()) {
+    if (label.ToString().substr(0, 3) != "   " && label.HasAnError()) {
       codelines_.at(counter).SetErrorMessages(label.GetErrorMessages());
       has_an_error_ = true;
     }
@@ -251,7 +255,8 @@ void Assembler::PassTwo() {
         valid_symbol = false;
         machine_code = kDummyCodeA;
         machinecode_.push_back(machine_code);
-        codelines_.at(counter).SetErrorMessages("SYMBOL " + sym_operand + " IS UNDEFINED");
+        codelines_.at(counter).SetErrorMessages("SYMBOL " +
+                                                sym_operand + " IS UNDEFINED");
         has_an_error_ = true;
       }
       if (symboltable_.find(sym_operand) != symboltable_.end()) {
@@ -276,7 +281,8 @@ void Assembler::PassTwo() {
       machine_code += DABnamespace::DecToBitString(memory_address, 12);
       machinecode_.push_back(machine_code);
     } else if (valid_symbol) {
-      //  Set machine code for any instruction in Format 2, and checks if it is a valid
+      //  Set machine code for any instruction in Format 2,
+      //  and checks if it is a valid
       //  instruction or not
       machine_code = opcode;
       machine_code += "0";
@@ -292,7 +298,7 @@ void Assembler::PassTwo() {
           codelines_.at(counter).GetHexObject().GetValue(), 16);
         } else {
           machine_code = kDummyCodeC;
-          codelines_.at(counter).SetErrorMessages("ERROR, " + 
+          codelines_.at(counter).SetErrorMessages("ERROR, " +
           codelines_.at(counter).GetHexObject().GetText()  +
           " IS INVALID");
         }   // 000 machine_code
@@ -327,7 +333,7 @@ void Assembler::PassTwo() {
             " IS INVALID");
             has_an_error_ = true;
           }
-      } else if (mnemonic == "ORG") {   
+      } else if (mnemonic == "ORG") {
           if (codelines_.at(counter).GetHexObject().GetValue() < maxpc_ &&
             codelines_.at(counter).GetHexObject().
             GetValue() > 0) {
@@ -338,14 +344,14 @@ void Assembler::PassTwo() {
               machinecode_.push_back(kDummyCodeA);
               org_counter++;
             }
-            }
-          else {
-            codelines_.at(counter).SetErrorMessages("ERROR, " + 
-            codelines_.at(counter).GetHexObject().GetText() + " is out of bounds");
+            } else {
+            codelines_.at(counter).SetErrorMessages("ERROR, " +
+            codelines_.at(counter).GetHexObject().GetText() +
+            " is out of bounds");
             has_an_error_ = true;
           }
-      }
-      if (machine_code != "" ) { 
+       }
+      if (machine_code != "") {
         machinecode_.push_back(machine_code);
       }
     }
@@ -370,10 +376,9 @@ void Assembler::PrintCodeLines() {
   string s = "";
   // prints each codeline
   for (auto iter = codelines_.begin(); iter != codelines_.end(); ++iter) {
-    if ((*iter).IsAllComment()){
-      s += (*iter).GetCode() + '\n'; 
-    }
-    else {
+    if ((*iter).IsAllComment()) {
+      s += (*iter).GetCode() + '\n';
+    } else {
       s += (*iter).ToString() + '\n';
     }
   }
@@ -404,7 +409,6 @@ void Assembler::PrintMachineCode(string binary_filename,
   // Uses a bitset to convert the ascii to binary and then writes binary to
   // a file 16 bits at a time
   if (found_end_statement_ && has_an_error_ == false) {
-
   for (int i = 0; i < machinecode_.size(); i++) {
     out_stream << machinecode_.at(i) << endl;
     Utils::log_stream << machinecode_.at(i) << endl;
@@ -423,7 +427,6 @@ void Assembler::PrintMachineCode(string binary_filename,
   }
   }
   } else {
-  
     Utils::log_stream << "ERRORS EXIST IN CODE" << endl;
     Utils::log_stream << "NO MACHINE CODE GENERATED" << endl;
   }
