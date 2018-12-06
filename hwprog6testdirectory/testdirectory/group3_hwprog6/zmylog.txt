@@ -15,21 +15,19 @@ PASS TWO
 **** ERROR -- SYMBOL 68  IS INVALID
     4    3  000000000011      BAN    CH K           BAN   CHK       
 SYMBOL CHK IS UNDEFINED
-    5    4  000000000100      ORG         +0        ORG       +0010 
+    5    4  000000000100      ORG         +0        ORG       ..... 
     6   16  000000010000 STR  LD     A1      STR    LD    A1        
 **** ERROR -- SYMBOL STR IS MULTIPLY DEFINED
     7   17  000000010001      DIV    90             DIV   90        
 MNEMONIC DIV IS INVALID
 SYMBOL 90  IS UNDEFINED
-    8   18  000000010010      ORG         -0        ORG       ..... 
+    8   18  000000010010      ORG         -0        ORG       -0011 
 ERROR, -0011 is out of bounds
-    9   18  000000010010 A1   DS          +0 A1     DS        +000A * comment
-   10   28  000000011100      DS          +0        DS        +0006 * comment
+    9   18  000000010010 A1   DS          +0 A1     DS        ..... * comment
+   10   28  000000011100      DS          +0        DS        ..... * comment
    11   34  000000100010      HEX         +0        HEX       ..... 
 ERROR, +0A0U IS INVALID
-   12   35  000000100011 B2   HEX         -0 B2     HEX       -001C * comment
-
-***** ERROR -- NO 'END' STATEMENT
+   12   35  000000100011 B2   HEX         -0 B2     HEX       ..... * comment
 
 SYM 68    2 INVALID
 SYM A1   18
